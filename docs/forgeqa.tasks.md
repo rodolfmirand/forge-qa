@@ -174,7 +174,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Epic
 - **Titulo:** Montar o pipeline de contexto e consulta a IA
-- **Status:** Todo
+- **Status:** Done
 - **Objetivo:** permitir que a IA receba um pedido minimamente util e devolva uma resposta reaproveitavel
 
 ### FQA-201
@@ -189,7 +189,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Implementar extracao simplificada do DOM
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-107
 - **Criterio de aceite:** o sistema coleta apenas elementos interativos e metadados relevantes para a cura
 
@@ -197,7 +197,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Definir schema JSON das respostas da IA
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-201
 - **Criterio de aceite:** o retorno esperado possui campos claros para cenarios gerados, seletor sugerido, confianca e justificativa curta
 
@@ -205,7 +205,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Implementar cliente de IA com validacao de resposta
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-203
 - **Criterio de aceite:** o sistema consulta a IA e rejeita respostas malformadas ou fora do contrato
 
@@ -213,7 +213,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Registrar o payload de geracao e cura para auditoria
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-204
 - **Criterio de aceite:** cada tentativa de geracao ou cura guarda contexto minimo para diagnostico posterior
 
@@ -443,11 +443,11 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 Os itens que devem receber foco imediato agora sao:
 
-- FQA-202
-- FQA-203
-- FQA-204
-- FQA-205
 - FQA-301
 - FQA-302
 - FQA-303
 - FQA-304
+- FQA-305
+- FQA-401
+- FQA-402
+- FQA-404
