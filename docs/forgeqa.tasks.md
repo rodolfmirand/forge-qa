@@ -319,14 +319,14 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Epic
 - **Titulo:** Expor o MVP por API local e painel web para demonstracao
-- **Status:** Todo
+- **Status:** Doing
 - **Objetivo:** tornar o projeto amigavel para uso local e demonstracao sem depender de CLI como interface principal
 
 ### FQA-501
 
 - **Tipo:** Task
 - **Titulo:** Criar contrato HTTP local para iniciar execucoes
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-100
 - **Criterio de aceite:** existe um endpoint local para receber URL, descricao do fluxo e parametros minimos da execucao
 
@@ -334,7 +334,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Implementar endpoint local de status e resultado
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-501
 - **Criterio de aceite:** a execucao iniciada pode ser consultada por status e resultado final
 
@@ -342,7 +342,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Criar painel web local para entrada de URL e fluxo
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-501
 - **Criterio de aceite:** o usuario consegue informar URL e descricao do fluxo por interface web local
 
@@ -350,7 +350,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Exibir progresso, logs e resultado no painel web
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-502
 - **Criterio de aceite:** o painel mostra status de execucao, resultado final e logs basicos do fluxo
 
@@ -498,7 +498,7 @@ Os itens que devem receber foco imediato agora sao:
 - FQA-302
 - FQA-303
 - FQA-304
-- FQA-501
-- FQA-503
-- FQA-504
+- FQA-505
+- FQA-506
+- FQA-507
 - FQA-601
