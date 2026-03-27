@@ -2,11 +2,16 @@ import type { ActionIntent } from "../actions/action.types.js";
 import type { AIResolver } from "../../ai/resolver/ai-resolver.js";
 import type { PlaywrightActionRunner } from "../../integrations/playwright/playwright-action-runner.js";
 import type { SelectorMemory } from "../../memory/selector-memory.js";
+import type { DOMExtractor } from "./dom-extractor.js";
+import type { AuditLogger } from "../reporting/audit-log.js";
+import { NoopAuditLogger } from "../reporting/audit-log.js";
 
 export interface HealerDependencies {
   actionRunner: PlaywrightActionRunner;
   aiResolver: AIResolver;
   selectorMemory: SelectorMemory;
+  domExtractor: DOMExtractor;
+  auditLogger?: AuditLogger;
 }
 
 export function isHealingCandidate(error: unknown): boolean {
@@ -22,10 +27,14 @@ export function isHealingCandidate(error: unknown): boolean {
 }
 
 export class Healer {
-  constructor(private readonly dependencies: HealerDependencies) {}
+  private readonly auditLogger: AuditLogger;
+
+  constructor(private readonly dependencies: HealerDependencies) {
+    this.auditLogger = dependencies.auditLogger ?? new NoopAuditLogger();
+  }
 
   async execute(intent: ActionIntent): Promise<void> {
-    const { actionRunner, aiResolver, selectorMemory } = this.dependencies;
+    const { actionRunner, aiResolver, selectorMemory, domExtractor } = this.dependencies;
     const memorizedSelector = await selectorMemory.find(intent.selector);
     const effectiveIntent = {
       ...intent,
@@ -35,18 +44,36 @@ export class Healer {
     try {
       await actionRunner.run(effectiveIntent);
     } catch (error) {
-      void aiResolver;
-
       if (!isHealingCandidate(error)) {
         throw error;
       }
 
-      if (memorizedSelector && memorizedSelector !== intent.selector) {
-        await actionRunner.run(intent);
-        return;
+      const domSnapshot = await domExtractor.extract();
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const suggestion = await aiResolver.resolve({
+        action: intent.kind,
+        originalSelector: effectiveIntent.selector,
+        actionDescription: intent.description,
+        domSnapshot,
+        errorMessage
+      });
+
+      await this.auditLogger.log("healing", {
+        intent,
+        effectiveIntent,
+        errorMessage,
+        suggestion
+      });
+
+      if (!suggestion) {
+        throw error;
       }
 
-      throw error;
+      await actionRunner.run({
+        ...intent,
+        selector: suggestion.selector
+      });
+      await selectorMemory.save(intent.selector, suggestion.selector);
     }
   }
 }

@@ -5,6 +5,7 @@ export interface HealingContext {
   originalSelector: string;
   actionDescription: string;
   domSnapshot: string;
+  errorMessage: string;
 }
 
 export interface HealingSuggestion {

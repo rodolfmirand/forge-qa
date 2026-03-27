@@ -1,6 +1,8 @@
 import type { Page } from "@playwright/test";
 import type { ActionIntent } from "../../core/actions/action.types.js";
 
+const ACTION_TIMEOUT_MS = 2_000;
+
 export interface PlaywrightActionRunner {
   run(intent: ActionIntent): Promise<void>;
 }
@@ -13,7 +15,7 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
 
     switch (intent.kind) {
       case "click": {
-        await locator.click();
+        await locator.click({ timeout: ACTION_TIMEOUT_MS });
         return;
       }
       case "fill": {
@@ -21,7 +23,7 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
           throw new Error(`Fill action is missing a value: ${intent.description}`);
         }
 
-        await locator.fill(intent.value);
+        await locator.fill(intent.value, { timeout: ACTION_TIMEOUT_MS });
         return;
       }
       case "select": {
@@ -29,7 +31,7 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
           throw new Error(`Select action is missing a value: ${intent.description}`);
         }
 
-        await locator.selectOption(intent.value);
+        await locator.selectOption(intent.value, { timeout: ACTION_TIMEOUT_MS });
         return;
       }
       default: {
