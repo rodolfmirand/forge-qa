@@ -9,6 +9,7 @@ O foco desta arquitetura e:
 - simplicidade de implementacao;
 - clareza sobre o fluxo de geracao automatica;
 - clareza sobre o fluxo de auto-cura;
+- clareza sobre a experiencia de uso local via API e painel web;
 - separacao basica entre geracao, execucao, contexto, IA e memoria;
 - evolucao segura para demonstracao e iteracoes futuras.
 
@@ -20,6 +21,8 @@ Nesta fase, o Forge QA e um projeto em `TypeScript` executando localmente em `No
 
 O projeto nao deve nascer como uma plataforma complexa de observabilidade ou orquestracao. A arquitetura inicial deve privilegiar um nucleo pequeno, testavel e demonstravel.
 
+Para o MVP, a interface principal recomendada nao e CLI pura. O acesso deve acontecer por uma `API local` e um `painel web local`, mantendo o motor desacoplado para futuras interfaces como CLI ou desktop.
+
 ### Direcao atual
 
 - runtime local: Node.js
@@ -27,6 +30,7 @@ O projeto nao deve nascer como uma plataforma complexa de observabilidade ou orq
 - motor de automacao: Playwright
 - camada de IA: OpenAI Node.js SDK
 - persistencia inicial: arquivo JSON local para memoria de seletores curados
+- interface do MVP: painel web local consumindo API local
 - prioridade funcional atual: provar geracao automatica inicial de testes e auto-cura de acoes UI em cenarios controlados
 
 ### Direcao futura
@@ -35,6 +39,7 @@ O projeto nao deve nascer como uma plataforma complexa de observabilidade ou orq
 - ampliar suporte para mais tipos de acoes automatizadas
 - enriquecer o contexto enviado para a IA com heuristicas adicionais
 - evoluir relatorios tecnicos e evidencias de execucao
+- avaliar aplicacao desktop apenas depois do MVP web estabilizado
 - adicionar pipeline recorrente de execucao no GitHub Actions
 - avaliar memoria mais robusta para historico de curas e analytics
 
@@ -49,6 +54,9 @@ docs/
   forgeqa.tasks.md
 src/
   index.ts
+  app/
+    api/
+    web/
   core/
     actions/
     generation/
@@ -74,6 +82,12 @@ storage/
 
 - `src/index.ts`
   ponto de entrada para bootstrap do projeto e inicializacao da execucao local
+
+- `src/app/api/`
+  endpoints locais para iniciar execucoes, consultar status e retornar artefatos
+
+- `src/app/web/`
+  interface web do MVP para entrada de URL e fluxo e exibicao dos resultados
 
 - `src/core/actions/`
   contrato das acoes automatizadas e primitivas usadas pelo fluxo de teste
@@ -119,31 +133,39 @@ storage/
 
 Camada responsavel por transformar uma fonte de entrada, inicialmente texto, em uma estrutura de cenario ou spec executavel.
 
-### 4.2 Test Runner
+### 4.2 Local API
+
+Camada de acesso local que recebe URL, descricao de fluxo e parametros de execucao e orquestra o motor.
+
+### 4.3 Web Panel
+
+Interface amigavel do MVP para disparar execucoes e acompanhar logs, resultado e healing.
+
+### 4.4 Test Runner
 
 Responsavel por iniciar e coordenar a execucao dos testes Playwright.
 
-### 4.3 Action Layer
+### 4.5 Action Layer
 
 Camada que encapsula operacoes como `click`, `fill` e `select`, mantendo a intencao da acao e o seletor original disponiveis para recuperacao.
 
-### 4.4 Healer
+### 4.6 Healer
 
 Componente central do diferencial tecnico. Decide se a falha pode ser tratada como fragilidade de automacao, monta o pedido de cura, aciona a IA, valida a resposta e tenta novamente.
 
-### 4.5 DOM Extractor
+### 4.7 DOM Extractor
 
 Extrai uma representacao simplificada da pagina, priorizando elementos interativos e metadados relevantes. Seu papel e reduzir ruido e custo.
 
-### 4.6 AI Resolver
+### 4.8 AI Resolver
 
 Envia contratos objetivos para a IA, tanto para geracao quanto para cura, e recebe respostas estruturadas.
 
-### 4.7 Selector Memory
+### 4.9 Selector Memory
 
 Persiste curas bem-sucedidas para evitar chamadas repetidas a IA e tornar a automacao cumulativamente mais resiliente.
 
-### 4.8 Reporter
+### 4.10 Reporter
 
 Consolida resultados da execucao, numero de geracoes, curas, sucessos, falhas e evidencias para demo e analise tecnica.
 
@@ -151,21 +173,22 @@ Consolida resultados da execucao, numero de geracoes, curas, sucessos, falhas e 
 
 ## 5. Fluxo Arquitetural
 
-1. O sistema recebe uma entrada de geracao, inicialmente texto.
-2. O `Test Generator` cria um cenario ou spec inicial.
-3. O teste chama uma acao do Forge QA, por exemplo `healer.click(...)`.
-4. A camada de integracao tenta executar a acao via Playwright.
-5. Se a acao falhar por seletor nao encontrado, o `Healer` verifica elegibilidade.
-6. O `DOM Extractor` resume o estado atual da pagina.
-7. O `AI Resolver` recebe:
+1. O usuario abre o `Web Panel` local e informa URL e descricao do fluxo.
+2. A `Local API` recebe a requisicao e orquestra o motor.
+3. O `Test Generator` cria um cenario ou spec inicial.
+4. O teste chama uma acao do Forge QA, por exemplo `healer.click(...)`.
+5. A camada de integracao tenta executar a acao via Playwright.
+6. Se a acao falhar por seletor nao encontrado, o `Healer` verifica elegibilidade.
+7. O `DOM Extractor` resume o estado atual da pagina.
+8. O `AI Resolver` recebe:
    - a intencao da acao;
    - o seletor original;
    - o tipo de elemento esperado;
    - o DOM resumido.
-8. A resposta da IA e validada contra um contrato estruturado.
-9. O Forge QA tenta novamente a acao com o seletor sugerido.
-10. Em caso de sucesso, a cura e registrada e persistida.
-11. Em caso de falha, o teste termina com erro explicito e rastreavel.
+9. A resposta da IA e validada contra um contrato estruturado.
+10. O Forge QA tenta novamente a acao com o seletor sugerido.
+11. Em caso de sucesso, a cura e registrada e persistida.
+12. O `Reporter` consolida o resultado e o `Web Panel` exibe logs e evidencias.
 
 ---
 
@@ -214,6 +237,8 @@ As proximas implementacoes devem seguir estes principios:
 
 ### Fase 4
 
+- API local para execucao do motor
+- painel web para uso amigavel do MVP
 - relatorio de execucao
 - score basico de qualidade
 - pipeline inicial no GitHub Actions
@@ -225,6 +250,7 @@ As proximas implementacoes devem seguir estes principios:
 - nao usar banco de dados no MVP inicial;
 - nao editar automaticamente o codigo-fonte dos testes;
 - nao tentar cobrir todas as fontes de entrada do desafio no primeiro corte;
+- nao tratar desktop como interface principal do primeiro corte;
 - nao usar multimodalidade como dependencia principal do primeiro corte;
 - nao tratar qualquer falha como curavel, apenas falhas elegiveis de localizacao;
 - nao transformar o projeto em plataforma fullstack antes de provar o nucleo.
@@ -234,6 +260,7 @@ As proximas implementacoes devem seguir estes principios:
 ## 9. Observacoes Importantes
 
 - o valor do Forge QA depende de combinar geracao automatica, execucao e recuperacao;
+- a experiencia do MVP deve ser amigavel o bastante para demo sem depender de comandos manuais complexos;
 - a arquitetura deve favorecer demo reproduzivel, nao sofisticacao prematura;
 - a memoria de curas deve ser simples no inicio, mas o contrato precisa permitir evolucao;
 - a proxima meta concreta e construir um fluxo ponta a ponta em que um cenario seja gerado, executado e, se necessario, curado automaticamente.

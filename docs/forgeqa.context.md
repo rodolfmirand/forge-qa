@@ -50,6 +50,7 @@ A ideia, portanto, nao e apenas envolver o framework de testes com uma camada de
 
 - Ter um MVP claro e demonstravel em poucos minutos.
 - Explicar facilmente o diferencial em relacao a uma suite Playwright comum.
+- Oferecer uma forma amigavel de uso para demo e operacao local.
 - Permitir evolucao posterior para mais tipos de acao, mais fontes de entrada e mais politicas de validacao.
 
 ## 4. Problema-Alvo
@@ -115,6 +116,8 @@ O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. 
 
 - Testes web em Playwright.
 - Geracao automatica inicial a partir de texto descritivo.
+- API local para receber URL + descricao de fluxo.
+- Painel web local simples para acionar a execucao e visualizar resultados.
 - Acoes basicas como `click`, `fill` e possivelmente `select`.
 - Falhas relacionadas a seletor nao encontrado ou elemento nao localizavel.
 - Extracao de DOM simplificado com foco em elementos interativos.
@@ -126,6 +129,7 @@ O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. 
 ### Fora do escopo inicialmente
 
 - Suporte completo e generico para todas as fontes de entrada do desafio.
+- Aplicacao desktop nativa como interface principal.
 - Cura para regras de negocio quebradas.
 - Correcao de asserts de conteudo.
 - Interpretacao visual completa por screenshot multimodal.
@@ -137,6 +141,7 @@ O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. 
 
 - O sistema deve aceitar ao menos uma fonte de entrada para geracao automatica de testes.
 - O sistema deve transformar essa entrada em um cenario ou estrutura executavel.
+- O sistema deve expor uma forma local de uso mais amigavel que CLI pura.
 - O sistema deve executar testes Playwright normalmente quando nao houver falhas.
 - O sistema deve interceptar falhas elegiveis de localizacao de elemento.
 - O sistema deve montar um contexto compacto e relevante da pagina.
@@ -160,6 +165,7 @@ O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. 
 - Linguagem: TypeScript
 - Framework de automacao: Playwright
 - Camada de IA: OpenAI Node.js SDK
+- Interface do MVP: API local + painel web
 - Execucao automatizada: GitHub Actions
 - Persistencia simples: arquivo JSON local para memoria de curas
 
@@ -167,6 +173,8 @@ O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. 
 
 - `Test Generator`: transforma entrada em cenarios ou specs executaveis.
 - `Test Runner`: executa os testes.
+- `Local API`: recebe requisicoes locais com URL, fluxo e configuracoes da execucao.
+- `Web Panel`: interface amigavel para disparar e acompanhar testes localmente.
 - `Healer`: intercepta falhas e coordena o processo de cura.
 - `DOM Extractor`: resume a pagina em contexto util.
 - `AI Resolver`: consulta a IA e recebe sugestoes estruturadas.
@@ -175,21 +183,22 @@ O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. 
 
 ## 11. Fluxo de Execucao Esperado
 
-1. O sistema recebe uma entrada de geracao, inicialmente texto.
-2. O `Test Generator` transforma essa entrada em um cenario ou spec executavel.
-3. O `Test Runner` tenta executar `click` ou `fill` com o seletor original.
-4. A acao falha por timeout ou ausencia do elemento.
-5. O `Healer` identifica que a falha e candidata a recuperacao.
-6. O `DOM Extractor` coleta apenas elementos relevantes da pagina.
-7. O `AI Resolver` recebe:
+1. O usuario abre o painel web local e informa URL e descricao do fluxo.
+2. A `Local API` recebe a requisicao e aciona o `Test Generator`.
+3. O `Test Generator` transforma essa entrada em um cenario ou spec executavel.
+4. O `Test Runner` tenta executar `click` ou `fill` com o seletor original.
+5. A acao falha por timeout ou ausencia do elemento.
+6. O `Healer` identifica que a falha e candidata a recuperacao.
+7. O `DOM Extractor` coleta apenas elementos relevantes da pagina.
+8. O `AI Resolver` recebe:
    - a intencao da acao;
    - o seletor original;
    - o DOM resumido;
    - metadados uteis como tipo de elemento e texto esperado.
-8. A IA retorna um novo seletor ou estrategia equivalente.
-9. O framework valida e reaplica a acao.
-10. Se funcionar, registra a cura e atualiza a memoria.
-11. Se falhar, encerra com erro explicito e evidencias.
+9. A IA retorna um novo seletor ou estrategia equivalente.
+10. O framework valida e reaplica a acao.
+11. Se funcionar, registra a cura e atualiza a memoria.
+12. O painel exibe resultado, logs e evidencias.
 
 ## 12. Criterios de Sucesso
 
@@ -264,14 +273,17 @@ Mitigacao: restringir o MVP a poucas fontes de entrada, poucos tipos de acao e p
 - Persistir curas bem-sucedidas.
 - Evitar loops de retentativa.
 
-### Dia 6 - Observabilidade
+### Dia 6 - API local + painel web
+
+- Expor uma API local para iniciar execucoes.
+- Criar painel web simples para URL + fluxo + resultado.
+- Mostrar progresso, logs e status final.
+
+### Dia 7 - Fechamento
 
 - Gerar relatorio final.
 - Exibir total de testes, curas e taxa de recuperacao.
 - Configurar pipeline basico no GitHub Actions.
-
-### Dia 7 - Fechamento
-
 - Refinar README.
 - Preparar demo reproduzivel.
 - Gravar video mostrando geracao, quebra, cura e reaproveitamento.
