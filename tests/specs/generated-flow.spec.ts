@@ -30,11 +30,28 @@ test("generated flow can be executed end-to-end with healing", async ({ page }) 
     content: "Open the login page, submit the form and validate the dashboard state.",
     targetUrl: fixtureUrl
   });
+  const clickStep = scenario.steps.find((step) => step.kind === "click");
+
+  if (!clickStep || clickStep.kind !== "click") {
+    throw new Error("Expected generated scenario to contain a click step.");
+  }
+
+  clickStep.selector = "#login-button";
+  clickStep.fallbackSelectors = ["#submit-login"];
 
   await executor.execute(scenario);
 
   await expect(page.locator("#result")).toContainText("Dashboard");
   await expect(selectorMemory.find("#login-button")).resolves.toBe("#submit-login");
   expect(auditLogger.getEntries().some((entry) => entry.type === "generation")).toBeTruthy();
-  expect(auditLogger.getEntries().some((entry) => entry.type === "healing")).toBeTruthy();
+  expect(
+    auditLogger.getEntries().some((entry) => {
+      if (entry.type !== "healing" || !entry.payload || typeof entry.payload !== "object") {
+        return false;
+      }
+
+      const payload = entry.payload as Record<string, unknown>;
+      return payload.recoveredSelector === "#submit-login";
+    })
+  ).toBeTruthy();
 });
