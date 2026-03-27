@@ -53,6 +53,7 @@ cp .env.example .env
 
 3. Ajuste ao menos:
 
+- `FORGEQA_AI_MODE`
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
 - `FORGEQA_SELECTOR_MEMORY_PATH`
@@ -70,6 +71,11 @@ npm run typecheck
 npm run lint
 npm run test
 ```
+
+## Modos de IA
+
+- `FORGEQA_AI_MODE=mock`: usa o resolver local sem custo de API
+- `FORGEQA_AI_MODE=openai`: usa a API real da OpenAI quando `OPENAI_API_KEY` estiver configurada
 
 ## Estrutura inicial
 
@@ -95,7 +101,7 @@ storage/
 
 ## Estado atual
 
-Esta base agora cobre:
+A base agora cobre:
 
 - bootstrap do repositório
 - configuracao TypeScript
@@ -103,3 +109,4 @@ Esta base agora cobre:
 - configuracao de lint e formatacao
 - estrutura inicial para geracao automatica de testes
 - estrutura inicial para execucao e `self-healing`
+- modo `mock` e modo `openai` para a camada de resolucao
