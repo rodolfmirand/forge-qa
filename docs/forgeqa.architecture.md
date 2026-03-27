@@ -7,15 +7,16 @@ Este documento descreve a arquitetura inicial do Forge QA para as fases iniciais
 O foco desta arquitetura e:
 
 - simplicidade de implementacao;
+- clareza sobre o fluxo de geracao automatica;
 - clareza sobre o fluxo de auto-cura;
-- separacao basica entre execucao, contexto, IA e memoria;
+- separacao basica entre geracao, execucao, contexto, IA e memoria;
 - evolucao segura para demonstracao e iteracoes futuras.
 
 ---
 
 ## 2. Direcao Arquitetural
 
-Nesta fase, o Forge QA e um projeto em `TypeScript` executando localmente em `Node.js`, usando `Playwright` como motor de automacao e uma camada de IA para recuperar falhas elegiveis de seletor.
+Nesta fase, o Forge QA e um projeto em `TypeScript` executando localmente em `Node.js`, usando `Playwright` como motor de automacao, uma camada de IA para gerar cenarios iniciais de teste e outra camada de IA para recuperar falhas elegiveis de seletor.
 
 O projeto nao deve nascer como uma plataforma complexa de observabilidade ou orquestracao. A arquitetura inicial deve privilegiar um nucleo pequeno, testavel e demonstravel.
 
@@ -26,10 +27,11 @@ O projeto nao deve nascer como uma plataforma complexa de observabilidade ou orq
 - motor de automacao: Playwright
 - camada de IA: OpenAI Node.js SDK
 - persistencia inicial: arquivo JSON local para memoria de seletores curados
-- prioridade funcional atual: provar a auto-cura de acoes UI em cenarios controlados
+- prioridade funcional atual: provar geracao automatica inicial de testes e auto-cura de acoes UI em cenarios controlados
 
 ### Direcao futura
 
+- ampliar suporte para mais tipos de fontes de entrada
 - ampliar suporte para mais tipos de acoes automatizadas
 - enriquecer o contexto enviado para a IA com heuristicas adicionais
 - evoluir relatorios tecnicos e evidencias de execucao
@@ -49,6 +51,7 @@ src/
   index.ts
   core/
     actions/
+    generation/
     healing/
     reporting/
   ai/
@@ -75,11 +78,14 @@ storage/
 - `src/core/actions/`
   contrato das acoes automatizadas e primitivas usadas pelo fluxo de teste
 
+- `src/core/generation/`
+  contratos de entrada, geracao inicial de cenarios e transformacao em artefatos executaveis
+
 - `src/core/healing/`
   logica de interceptacao de falhas, elegibilidade de cura, retentativa e controle do fluxo
 
 - `src/core/reporting/`
-  agregacao de eventos, estatisticas de cura e geracao de relatorio final
+  agregacao de eventos, estatisticas de geracao, execucao e cura
 
 - `src/ai/prompts/`
   definicao dos prompts e contratos de instrucao enviados para a IA
@@ -94,7 +100,7 @@ storage/
   leitura e escrita da memoria local de seletores curados
 
 - `src/types/`
-  tipos compartilhados entre execucao, IA, memoria e relatorio
+  tipos compartilhados entre geracao, execucao, IA, memoria e relatorio
 
 - `tests/specs/`
   cenarios E2E e demonstracoes do MVP
@@ -109,51 +115,57 @@ storage/
 
 ## 4. Componentes Principais
 
-### 4.1 Test Runner
+### 4.1 Test Generator
+
+Camada responsavel por transformar uma fonte de entrada, inicialmente texto, em uma estrutura de cenario ou spec executavel.
+
+### 4.2 Test Runner
 
 Responsavel por iniciar e coordenar a execucao dos testes Playwright.
 
-### 4.2 Action Layer
+### 4.3 Action Layer
 
 Camada que encapsula operacoes como `click`, `fill` e `select`, mantendo a intencao da acao e o seletor original disponiveis para recuperacao.
 
-### 4.3 Healer
+### 4.4 Healer
 
-Componente central do MVP. Decide se a falha pode ser tratada como fragilidade de automacao, monta o pedido de cura, aciona a IA, valida a resposta e tenta novamente.
+Componente central do diferencial tecnico. Decide se a falha pode ser tratada como fragilidade de automacao, monta o pedido de cura, aciona a IA, valida a resposta e tenta novamente.
 
-### 4.4 DOM Extractor
+### 4.5 DOM Extractor
 
 Extrai uma representacao simplificada da pagina, priorizando elementos interativos e metadados relevantes. Seu papel e reduzir ruido e custo.
 
-### 4.5 AI Resolver
+### 4.6 AI Resolver
 
-Envia um contrato objetivo para a IA e recebe uma resposta estruturada com novo seletor ou estrategia equivalente.
+Envia contratos objetivos para a IA, tanto para geracao quanto para cura, e recebe respostas estruturadas.
 
-### 4.6 Selector Memory
+### 4.7 Selector Memory
 
 Persiste curas bem-sucedidas para evitar chamadas repetidas a IA e tornar a automacao cumulativamente mais resiliente.
 
-### 4.7 Reporter
+### 4.8 Reporter
 
-Consolida resultados da execucao, numero de curas, sucessos, falhas e evidencias para demo e analise tecnica.
+Consolida resultados da execucao, numero de geracoes, curas, sucessos, falhas e evidencias para demo e analise tecnica.
 
 ---
 
 ## 5. Fluxo Arquitetural
 
-1. O teste chama uma acao do Forge QA, por exemplo `healer.click(...)`.
-2. A camada de integracao tenta executar a acao via Playwright.
-3. Se a acao falhar por seletor nao encontrado, o `Healer` verifica elegibilidade.
-4. O `DOM Extractor` resume o estado atual da pagina.
-5. O `AI Resolver` recebe:
+1. O sistema recebe uma entrada de geracao, inicialmente texto.
+2. O `Test Generator` cria um cenario ou spec inicial.
+3. O teste chama uma acao do Forge QA, por exemplo `healer.click(...)`.
+4. A camada de integracao tenta executar a acao via Playwright.
+5. Se a acao falhar por seletor nao encontrado, o `Healer` verifica elegibilidade.
+6. O `DOM Extractor` resume o estado atual da pagina.
+7. O `AI Resolver` recebe:
    - a intencao da acao;
    - o seletor original;
    - o tipo de elemento esperado;
    - o DOM resumido.
-6. A resposta da IA e validada contra um contrato estruturado.
-7. O Forge QA tenta novamente a acao com o seletor sugerido.
-8. Em caso de sucesso, a cura e registrada e persistida.
-9. Em caso de falha, o teste termina com erro explicito e rastreavel.
+8. A resposta da IA e validada contra um contrato estruturado.
+9. O Forge QA tenta novamente a acao com o seletor sugerido.
+10. Em caso de sucesso, a cura e registrada e persistida.
+11. Em caso de falha, o teste termina com erro explicito e rastreavel.
 
 ---
 
@@ -161,6 +173,7 @@ Consolida resultados da execucao, numero de curas, sucessos, falhas e evidencias
 
 As proximas implementacoes devem seguir estes principios:
 
+- a fonte de entrada do teste deve ser tratada como contrato explicito;
 - a intencao da acao deve ser preservada alem do seletor cru;
 - integracao com Playwright deve ficar separada da regra de cura;
 - prompt e parsing de IA devem ser isolados da logica de execucao;
@@ -182,11 +195,13 @@ As proximas implementacoes devem seguir estes principios:
 ### Fase 1
 
 - criacao de teste feliz de referencia
+- definicao do contrato de entrada para geracao
+- implementacao do gerador inicial de cenarios
 - definicao do contrato de acoes
-- implementacao do wrapper inicial do `Healer`
 
 ### Fase 2
 
+- transformacao da geracao em artefato executavel
 - extracao de DOM simplificado
 - contrato de prompt
 - cliente inicial de IA com resposta JSON
@@ -209,15 +224,16 @@ As proximas implementacoes devem seguir estes principios:
 
 - nao usar banco de dados no MVP inicial;
 - nao editar automaticamente o codigo-fonte dos testes;
+- nao tentar cobrir todas as fontes de entrada do desafio no primeiro corte;
 - nao usar multimodalidade como dependencia principal do primeiro corte;
-- nao tratar qualquer falha como "curavel", apenas falhas elegiveis de localizacao;
+- nao tratar qualquer falha como curavel, apenas falhas elegiveis de localizacao;
 - nao transformar o projeto em plataforma fullstack antes de provar o nucleo.
 
 ---
 
 ## 9. Observacoes Importantes
 
-- o valor principal do Forge QA esta na camada de recuperacao, nao na execucao basica de testes;
+- o valor do Forge QA depende de combinar geracao automatica, execucao e recuperacao;
 - a arquitetura deve favorecer demo reproduzivel, nao sofisticacao prematura;
 - a memoria de curas deve ser simples no inicio, mas o contrato precisa permitir evolucao;
-- a proxima meta concreta e construir um fluxo ponta a ponta em que uma falha de seletor seja corrigida e registrada automaticamente.
+- a proxima meta concreta e construir um fluxo ponta a ponta em que um cenario seja gerado, executado e, se necessario, curado automaticamente.
