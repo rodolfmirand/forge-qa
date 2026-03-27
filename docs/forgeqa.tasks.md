@@ -107,7 +107,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Epic
 - **Titulo:** Criar o fluxo minimo de geracao e execucao dos testes
-- **Status:** Doing
+- **Status:** Done
 - **Objetivo:** garantir uma base funcional de geracao e execucao antes da camada de cura
 
 ### FQA-101
@@ -138,7 +138,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Transformar o cenario gerado em fluxo executavel
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-103
 - **Criterio de aceite:** o sistema consegue converter o cenario gerado em execucao Playwright ou spec equivalente
 
@@ -146,7 +146,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Definir contrato interno das acoes automatizadas
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-104
 - **Criterio de aceite:** acoes como `click` e `fill` possuem interface clara com seletor, intencao e metadados
 
@@ -154,7 +154,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Implementar wrapper inicial do `Healer`
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-105
 - **Criterio de aceite:** a execucao passa por uma camada centralizada capaz de interceptar falhas de acao
 
@@ -162,7 +162,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Classificar falhas elegiveis para auto-cura
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-106
 - **Criterio de aceite:** o sistema diferencia erros de seletor de falhas que nao devem disparar cura
 
@@ -443,11 +443,11 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 Os itens que devem receber foco imediato agora sao:
 
-- FQA-104
-- FQA-105
-- FQA-106
-- FQA-107
 - FQA-202
 - FQA-203
 - FQA-204
+- FQA-205
 - FQA-301
+- FQA-302
+- FQA-303
+- FQA-304
