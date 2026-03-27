@@ -1,3 +1,5 @@
+import { sanitizeForDisplay } from "./sanitization.js";
+
 export type AuditEventType = "generation" | "healing";
 
 export interface AuditEntry {
@@ -16,7 +18,7 @@ export class InMemoryAuditLogger implements AuditLogger {
   async log(type: AuditEventType, payload: unknown): Promise<void> {
     this.entries.push({
       type,
-      payload,
+      payload: sanitizeForDisplay(payload),
       createdAt: new Date().toISOString()
     });
   }

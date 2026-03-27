@@ -33,7 +33,8 @@ export class GeneratedScenarioExecutor {
           kind: "fill",
           selector: step.selector,
           description: step.description,
-          value: step.value
+          value: step.value,
+          ...(step.fallbackSelectors ? { fallbackSelectors: step.fallbackSelectors } : {})
         });
         return;
       }
@@ -45,7 +46,8 @@ export class GeneratedScenarioExecutor {
         await this.healer.execute({
           kind: "click",
           selector: step.selector,
-          description: step.description
+          description: step.description,
+          ...(step.fallbackSelectors ? { fallbackSelectors: step.fallbackSelectors } : {})
         });
         return;
       }

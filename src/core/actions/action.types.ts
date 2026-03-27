@@ -5,4 +5,5 @@ export interface ActionIntent {
   selector: string;
   description: string;
   value?: string;
+  fallbackSelectors?: string[];
 }

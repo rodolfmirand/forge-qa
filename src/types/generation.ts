@@ -12,6 +12,7 @@ export interface GeneratedTestStep {
   kind: GeneratedStepKind;
   description: string;
   selector?: string;
+  fallbackSelectors?: string[];
   value?: string;
   url?: string;
   text?: string;
