@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Forge QA Login Fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>Second Mind Login</h1>
+      <form id="login-form">
+        <label>
+          Email
+          <input id="email" name="email" type="email" />
+        </label>
+        <label>
+          Password
+          <input id="password" name="password" type="password" />
+        </label>
+        <button id="login-button" type="submit">Sign in</button>
+      </form>
+      <section id="result">Waiting</section>
+    </main>
+
+    <script>
+      const form = document.getElementById("login-form");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        result.textContent = "Dashboard";
+      });
+    </script>
+  </body>
+</html>
