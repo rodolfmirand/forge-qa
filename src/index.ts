@@ -7,11 +7,13 @@ async function main(): Promise<void> {
   const generatedScenario = await generator.generate({
     title: "Login flow",
     sourceType: "text",
-    content: "Open the login page and validate that the main heading is visible."
+    content: "Open the login page, submit the form and validate the dashboard state.",
+    targetUrl: "about:blank"
   });
 
   console.log("Forge QA bootstrap ready.");
   console.log(`Generation bootstrap ready: ${generatedScenario.title}`);
+  console.log(`Generated steps: ${generatedScenario.steps.length}`);
   console.log(`Execution summary template: ${JSON.stringify(summary)}`);
 }
 

@@ -9,16 +9,44 @@ export interface HealerDependencies {
   selectorMemory: SelectorMemory;
 }
 
+export function isHealingCandidate(error: unknown): boolean {
+  const message =
+    error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+
+  return (
+    message.includes("locator") ||
+    message.includes("element") ||
+    message.includes("timeout") ||
+    message.includes("waiting for")
+  );
+}
+
 export class Healer {
   constructor(private readonly dependencies: HealerDependencies) {}
 
   async execute(intent: ActionIntent): Promise<void> {
-    const { actionRunner, selectorMemory } = this.dependencies;
+    const { actionRunner, aiResolver, selectorMemory } = this.dependencies;
     const memorizedSelector = await selectorMemory.find(intent.selector);
-
-    await actionRunner.run({
+    const effectiveIntent = {
       ...intent,
       selector: memorizedSelector ?? intent.selector
-    });
+    };
+
+    try {
+      await actionRunner.run(effectiveIntent);
+    } catch (error) {
+      void aiResolver;
+
+      if (!isHealingCandidate(error)) {
+        throw error;
+      }
+
+      if (memorizedSelector && memorizedSelector !== intent.selector) {
+        await actionRunner.run(intent);
+        return;
+      }
+
+      throw error;
+    }
   }
 }
