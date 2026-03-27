@@ -1,0 +1,36 @@
+{
+  "name": "forge-qa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework de automacao de testes com self-healing guiado por IA.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/src/index.js",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "openai": "^4.68.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.14.1",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.0"
+  }
+}

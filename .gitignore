@@ -1,0 +1,31 @@
+# Node dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build artifacts
+dist/
+build/
+out/
+.tscache/
+
+# Local environment
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Logs
+logs/
+*.log
+
+# Editors and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
