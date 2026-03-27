@@ -24,6 +24,11 @@ O `Forge QA` nao e apenas uma suite Playwright. O produto passa a ter tres capac
 - `test execution`: rodar os testes e coletar evidencias;
 - `self-healing`: recuperar falhas elegiveis de seletor com apoio de IA.
 
+Para o MVP, a interface principal planejada passa a ser:
+
+- `API local`: para iniciar execucoes e consultar resultados
+- `painel web local`: para uso amigavel em demo e operacao local
+
 ## Scripts
 
 - `npm run dev`: executa o bootstrap local em modo watch
