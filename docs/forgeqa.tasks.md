@@ -182,7 +182,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Demonstrar auto-cura em cenario controlado
-- **Status:** Doing
+- **Status:** Done
 - **Dependencia:** FQA-304
 - **Criterio de aceite:** o fluxo mostra falha inicial, estrategia de healing e sucesso posterior
 
@@ -190,7 +190,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Demonstrar geracao automatica em cenario controlado
-- **Status:** Doing
+- **Status:** Done
 - **Dependencia:** FQA-104
 - **Criterio de aceite:** o fluxo mostra entrada textual, cenario gerado e execucao resultante
 
@@ -198,7 +198,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Refinar documentacao da arquitetura e da demo
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-504
 - **Criterio de aceite:** um avaliador consegue entender a proposta, rodar o projeto e seguir a demonstracao
 
@@ -377,8 +377,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 Os itens com maior valor imediato agora sao:
 
-- FQA-506
-- FQA-508
+- FQA-509
 - FQA-705
 - FQA-706
 - FQA-707

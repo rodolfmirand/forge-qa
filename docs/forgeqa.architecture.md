@@ -80,7 +80,7 @@ storage/
   expor contratos HTTP para criar, consultar e futuramente listar execucoes, artefatos e historico
 
 - `src/app/web/`
-  interface local para disparar fluxos, visualizar planejamento, logs, healing e resultado final
+  interface local para disparar fluxos, visualizar planejamento, logs, healing, resultado final e demos controladas
 
 - `src/core/generation/`
   transformar entradas em cenarios planejados, sem depender de um caso fixo como login
@@ -153,6 +153,18 @@ Reaproveita curas bem-sucedidas para reduzir custo, latencia e variabilidade.
 
 Consolida entrada, plano, execucao, healing, erro final e artefatos para API, painel e pipeline.
 
+### 4.11 Demo Layer
+
+O painel pode oferecer `fixtures` e presets controlados para demonstrar:
+
+- geracao do plano a partir de texto;
+- execucao ponta a ponta;
+- falha inicial de seletor;
+- recuperacao por `memory`, `fallback` ou `ai`;
+- evidencias e score final.
+
+Essa camada nao substitui a API nem altera o contrato do motor. Ela apenas monta cenarios reproduziveis para avaliacao tecnica.
+
 ---
 
 ## 5. Fluxo Arquitetural
@@ -174,6 +186,7 @@ Consolida entrada, plano, execucao, healing, erro final e artefatos para API, pa
 - planejar e executar sao responsabilidades distintas
 - o contrato de steps deve ser mais estavel que heuristicas de planning
 - healing deve ser explicavel, limitado e auditavel
+- a interface deve conseguir demonstrar healing real sem depender de manipulacao manual do codigo
 - integracoes concretas devem ficar atras de adaptadores
 - memoria e IA devem ser complementares, nao concorrentes
 - painel e API nao podem conter segredo nem logar credenciais em claro
