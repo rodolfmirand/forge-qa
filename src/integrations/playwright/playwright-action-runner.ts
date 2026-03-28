@@ -2,6 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import type { ActionIntent } from "../../core/actions/action.types.js";
 
 const ACTION_TIMEOUT_MS = 2_000;
+const RECOVERY_VALIDATION_TIMEOUT_MS = 300;
 
 export interface PlaywrightActionRunner {
   run(intent: ActionIntent): Promise<void>;
@@ -66,7 +67,7 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
   async validate(intent: ActionIntent): Promise<void> {
     const locator = this.page.locator(intent.selector).first();
 
-    await locator.waitFor({ state: "visible", timeout: ACTION_TIMEOUT_MS });
+    await locator.waitFor({ state: "visible", timeout: RECOVERY_VALIDATION_TIMEOUT_MS });
     await assertSupportedElement(intent, locator);
   }
 
