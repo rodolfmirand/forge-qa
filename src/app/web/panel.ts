@@ -122,7 +122,8 @@ export function renderWebPanelHtml(): string {
         margin-bottom: 16px;
       }
 
-      .meta strong {
+      .meta strong,
+      .info strong {
         display: block;
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -136,6 +137,42 @@ export function renderWebPanelHtml(): string {
         font-size: 1rem;
       }
 
+      .info-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        margin-bottom: 16px;
+      }
+
+      .info {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .info pre,
+      .logs {
+        margin: 8px 0 0;
+        white-space: pre-wrap;
+      }
+
+      .artifact-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .artifact-list a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .artifact-list a:hover {
+        text-decoration: underline;
+      }
+
       .logs {
         border-radius: 16px;
         background: #201d19;
@@ -143,7 +180,6 @@ export function renderWebPanelHtml(): string {
         padding: 16px;
         overflow: auto;
         min-height: 220px;
-        white-space: pre-wrap;
       }
 
       .status-running {
@@ -169,7 +205,7 @@ export function renderWebPanelHtml(): string {
     <main>
       <section class="hero">
         <h1>Forge QA</h1>
-        <p>Informe uma URL e descreva o fluxo. O motor gera o cenario, executa o teste e exibe status, logs e healing.</p>
+        <p>Informe uma URL e descreva o fluxo. O motor gera o cenario, executa o teste, mostra o plano, resume o resultado e preserva evidencias.</p>
       </section>
 
       <section class="layout">
@@ -201,6 +237,16 @@ export function renderWebPanelHtml(): string {
             <div>
               <strong>Cenario</strong>
               <span id="scenario-title">-</span>
+            </div>
+          </div>
+          <div class="info-grid">
+            <div class="info">
+              <strong>Resumo</strong>
+              <pre id="execution-summary">Aguardando execucao...</pre>
+            </div>
+            <div class="info">
+              <strong>Evidencias</strong>
+              <div class="artifact-list" id="execution-artifacts">Aguardando execucao...</div>
             </div>
           </div>
           <div class="logs" id="execution-logs">Aguardando execucao...</div>

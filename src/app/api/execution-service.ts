@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { ExecutionEngine } from "../../core/execution/execution-engine.js";
 import type {
+  ExecutionArtifact,
   ExecutionRecord,
   ExecutionRequest,
   ExecutionResult
@@ -42,6 +43,16 @@ export class ExecutionService {
     return [...this.executions.values()];
   }
 
+  getArtifact(executionId: string, artifactId: string): ExecutionArtifact | null {
+    const record = this.executions.get(executionId);
+
+    if (!record?.result?.artifacts?.length) {
+      return null;
+    }
+
+    return record.result.artifacts.find((artifact) => artifact.id === artifactId) ?? null;
+  }
+
   private normalizeUrl(url: string): string {
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://")) {
       return url;
@@ -67,7 +78,10 @@ export class ExecutionService {
       updatedAt: new Date().toISOString()
     });
 
-    const result = await this.engine.execute(record.request);
+    const result = await this.engine.execute({
+      ...record.request,
+      executionId: id
+    });
     this.finish(id, result);
   }
 
@@ -78,11 +92,19 @@ export class ExecutionService {
       return;
     }
 
+    const artifacts = result.artifacts?.map((artifact) => ({
+      ...artifact,
+      url: `${this.baseUrl}/api/executions/${id}/artifacts/${artifact.id}`
+    }));
+
     this.executions.set(id, {
       ...record,
       status: result.status,
       updatedAt: new Date().toISOString(),
-      result
+      result: {
+        ...result,
+        ...(artifacts ? { artifacts } : {})
+      }
     });
   }
 }

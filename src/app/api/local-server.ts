@@ -106,10 +106,35 @@ export function createLocalServer(
 
             const record = executionService.create({
               url: payload.url,
-              flow: payload.flow
+              flow: payload.flow,
+              ...(payload.sourceType ? { sourceType: payload.sourceType } : {}),
+              ...(payload.options ? { options: payload.options } : {}),
+              ...(payload.metadata ? { metadata: payload.metadata } : {})
             });
 
             sendJson(response, 202, record);
+            return;
+          }
+
+          if (
+            request.method === "GET" &&
+            /\/api\/executions\/[^/]+\/artifacts\/[^/]+$/.test(url.pathname)
+          ) {
+            const segments = url.pathname.split("/");
+            const executionId = segments.at(-3) ?? "";
+            const artifactId = segments.at(-1) ?? "";
+            const artifact = executionService.getArtifact(executionId, artifactId);
+
+            if (!artifact) {
+              sendJson(response, 404, { error: "Artifact not found." });
+              return;
+            }
+
+            const content = await readFile(artifact.path);
+            response.writeHead(200, {
+              "Content-Type": artifact.contentType
+            });
+            response.end(content);
             return;
           }
 
@@ -128,6 +153,17 @@ export function createLocalServer(
 
           if (request.method === "GET" && url.pathname === "/fixtures/login-flow") {
             const fixturePath = path.resolve(process.cwd(), "tests/fixtures/login-flow.html");
+            const content = await readFile(fixturePath, "utf8");
+
+            response.writeHead(200, {
+              "Content-Type": "text/html; charset=utf-8"
+            });
+            response.end(content);
+            return;
+          }
+
+          if (request.method === "GET" && url.pathname === "/fixtures/home-entry") {
+            const fixturePath = path.resolve(process.cwd(), "tests/fixtures/home-entry.html");
             const content = await readFile(fixturePath, "utf8");
 
             response.writeHead(200, {
