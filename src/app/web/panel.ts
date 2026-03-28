@@ -99,6 +99,7 @@ export function renderWebPanelHtml(): string {
         display: flex;
         gap: 12px;
         margin-top: 18px;
+        flex-wrap: wrap;
       }
 
       button {
@@ -205,7 +206,7 @@ export function renderWebPanelHtml(): string {
     <main>
       <section class="hero">
         <h1>Forge QA</h1>
-        <p>Informe uma URL e descreva o fluxo. O motor gera o cenario, executa o teste, mostra o plano, resume o resultado e preserva evidencias.</p>
+        <p>Informe uma URL e descreva o fluxo. O motor gera o cenario, executa o teste, mostra o plano, resume o resultado e preserva evidencias. Use as demos para ver planejamento e auto-cura de forma controlada.</p>
       </section>
 
       <section class="layout">
@@ -220,7 +221,8 @@ export function renderWebPanelHtml(): string {
           </div>
           <div class="actions">
             <button type="button" id="execute-button">Executar fluxo</button>
-            <button type="button" class="secondary" id="prefill-button">Usar exemplo</button>
+            <button type="button" class="secondary" id="prefill-button">Usar exemplo base</button>
+            <button type="button" class="secondary" id="healing-demo-button">Usar demo de healing</button>
           </div>
         </section>
 
@@ -247,6 +249,10 @@ export function renderWebPanelHtml(): string {
             <div class="info">
               <strong>Evidencias</strong>
               <div class="artifact-list" id="execution-artifacts">Aguardando execucao...</div>
+            </div>
+            <div class="info">
+              <strong>Healing</strong>
+              <pre id="execution-healing">Aguardando execucao...</pre>
             </div>
           </div>
           <div class="logs" id="execution-logs">Aguardando execucao...</div>
