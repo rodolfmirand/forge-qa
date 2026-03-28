@@ -1,12 +1,12 @@
 # Tarefas Tecnicas: Forge QA
 
-Este documento transforma o contexto e o roadmap do projeto em um backlog tecnico executavel.
+Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestracao de testes E2E guiada por intencao.
 
 ## Convencoes
 
 - **Tipo:** Epic, Story, Task ou Spike
 - **Status:** Todo, Doing, Done, Blocked
-- **Dependencia:** item que precisa existir antes
+- **Dependencia:** item necessario antes da implementacao
 
 ---
 
@@ -17,87 +17,13 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 - **Tipo:** Epic
 - **Titulo:** Estruturar a base tecnica do Forge QA
 - **Status:** Done
-- **Objetivo:** preparar o repositorio para desenvolvimento incremental do MVP
+- **Objetivo:** preparar o repositorio para desenvolvimento incremental
 
-### FQA-001
+### FQA-001 a FQA-010
 
-- **Tipo:** Task
-- **Titulo:** Criar `package.json` com scripts de desenvolvimento
+- **Tipo:** Tasks
 - **Status:** Done
-- **Dependencia:** FQA-000
-- **Criterio de aceite:** o projeto possui scripts para `dev`, `build`, `test`, `lint`, `typecheck` e `format`
-
-### FQA-002
-
-- **Tipo:** Task
-- **Titulo:** Configurar TypeScript para execucao local
-- **Status:** Done
-- **Dependencia:** FQA-001
-- **Criterio de aceite:** o projeto compila corretamente e possui verificacao de tipos isolada
-
-### FQA-003
-
-- **Tipo:** Task
-- **Titulo:** Instalar e configurar Playwright
-- **Status:** Done
-- **Dependencia:** FQA-001
-- **Criterio de aceite:** existe uma suite executavel localmente com pelo menos um teste de referencia
-
-### FQA-004
-
-- **Tipo:** Task
-- **Titulo:** Definir estrutura inicial de pastas do projeto
-- **Status:** Done
-- **Dependencia:** FQA-001
-- **Criterio de aceite:** diretorios base existem para `src`, `tests`, `storage` e `docs`
-
-### FQA-005
-
-- **Tipo:** Task
-- **Titulo:** Criar `.env.example` com configuracoes da IA
-- **Status:** Done
-- **Dependencia:** FQA-001
-- **Criterio de aceite:** variaveis essenciais para execucao local e integracao com a IA estao documentadas
-
-### FQA-006
-
-- **Tipo:** Task
-- **Titulo:** Configurar lint e formatacao
-- **Status:** Done
-- **Dependencia:** FQA-001
-- **Criterio de aceite:** o repositorio possui configuracao funcional de lint e formatacao automatica
-
-### FQA-007
-
-- **Tipo:** Task
-- **Titulo:** Atualizar `README.md` com instrucoes operacionais
-- **Status:** Done
-- **Dependencia:** FQA-001
-- **Criterio de aceite:** um colaborador consegue instalar, configurar e rodar o projeto localmente
-
-### FQA-008
-
-- **Tipo:** Task
-- **Titulo:** Formalizar documento de contexto do projeto
-- **Status:** Done
-- **Dependencia:** FQA-000
-- **Criterio de aceite:** o desafio, escopo, hipotese do MVP e criterios de sucesso estao documentados
-
-### FQA-009
-
-- **Tipo:** Task
-- **Titulo:** Formalizar documento de arquitetura inicial
-- **Status:** Done
-- **Dependencia:** FQA-000
-- **Criterio de aceite:** a arquitetura descreve componentes, responsabilidades e direcao tecnica
-
-### FQA-010
-
-- **Tipo:** Task
-- **Titulo:** Formalizar backlog tecnico inicial
-- **Status:** Done
-- **Dependencia:** FQA-000
-- **Criterio de aceite:** o projeto possui tarefas organizadas por epicos, dependencias e criterios de aceite
+- **Objetivo consolidado:** bootstrap do repositorio, TypeScript, Playwright, `.env.example`, lint, README e documentacao base
 
 ---
 
@@ -106,65 +32,15 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 ### FQA-100
 
 - **Tipo:** Epic
-- **Titulo:** Criar o fluxo minimo de geracao e execucao dos testes
+- **Titulo:** Criar o fluxo base de geracao e execucao
 - **Status:** Done
-- **Objetivo:** garantir uma base funcional de geracao e execucao antes da camada de cura
+- **Objetivo:** garantir uma base funcional de geracao e execucao antes de endurecer healing e planejamento
 
-### FQA-101
+### FQA-101 a FQA-107
 
-- **Tipo:** Task
-- **Titulo:** Criar teste feliz de referencia com Playwright
+- **Tipo:** Tasks
 - **Status:** Done
-- **Dependencia:** FQA-003
-- **Criterio de aceite:** existe pelo menos um fluxo UI simples executando com sucesso sem intervencao da IA
-
-### FQA-102
-
-- **Tipo:** Task
-- **Titulo:** Definir contrato de entrada para geracao automatica de testes
-- **Status:** Done
-- **Dependencia:** FQA-003
-- **Criterio de aceite:** o sistema aceita pelo menos uma fonte de entrada, inicialmente texto, com estrutura clara e validavel
-
-### FQA-103
-
-- **Tipo:** Task
-- **Titulo:** Implementar servico inicial de geracao de cenarios
-- **Status:** Done
-- **Dependencia:** FQA-102
-- **Criterio de aceite:** uma entrada textual simples e transformada em um cenario estruturado consumivel internamente
-
-### FQA-104
-
-- **Tipo:** Task
-- **Titulo:** Transformar o cenario gerado em fluxo executavel
-- **Status:** Done
-- **Dependencia:** FQA-103
-- **Criterio de aceite:** o sistema consegue converter o cenario gerado em execucao Playwright ou spec equivalente
-
-### FQA-105
-
-- **Tipo:** Task
-- **Titulo:** Definir contrato interno das acoes automatizadas
-- **Status:** Done
-- **Dependencia:** FQA-104
-- **Criterio de aceite:** acoes como `click` e `fill` possuem interface clara com seletor, intencao e metadados
-
-### FQA-106
-
-- **Tipo:** Task
-- **Titulo:** Implementar wrapper inicial do `Healer`
-- **Status:** Done
-- **Dependencia:** FQA-105
-- **Criterio de aceite:** a execucao passa por uma camada centralizada capaz de interceptar falhas de acao
-
-### FQA-107
-
-- **Tipo:** Task
-- **Titulo:** Classificar falhas elegiveis para auto-cura
-- **Status:** Done
-- **Dependencia:** FQA-106
-- **Criterio de aceite:** o sistema diferencia erros de seletor de falhas que nao devem disparar cura
+- **Objetivo consolidado:** teste feliz, contrato de entrada, geracao inicial, executor e camada centralizada de healing
 
 ---
 
@@ -175,47 +51,13 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 - **Tipo:** Epic
 - **Titulo:** Montar o pipeline de contexto e consulta a IA
 - **Status:** Done
-- **Objetivo:** permitir que a IA receba um pedido minimamente util e devolva uma resposta reaproveitavel
+- **Objetivo:** permitir uso real de IA com contrato validado e auditoria minima
 
-### FQA-201
+### FQA-201 a FQA-205
 
-- **Tipo:** Task
-- **Titulo:** Definir prompt de sistema para geracao automatica de testes
+- **Tipo:** Tasks
 - **Status:** Done
-- **Dependencia:** FQA-102
-- **Criterio de aceite:** o prompt deixa explicitos o objetivo, o formato de resposta e as restricoes da geracao
-
-### FQA-202
-
-- **Tipo:** Task
-- **Titulo:** Implementar extracao simplificada do DOM
-- **Status:** Done
-- **Dependencia:** FQA-107
-- **Criterio de aceite:** o sistema coleta apenas elementos interativos e metadados relevantes para a cura
-
-### FQA-203
-
-- **Tipo:** Task
-- **Titulo:** Definir schema JSON das respostas da IA
-- **Status:** Done
-- **Dependencia:** FQA-201
-- **Criterio de aceite:** o retorno esperado possui campos claros para cenarios gerados, seletor sugerido, confianca e justificativa curta
-
-### FQA-204
-
-- **Tipo:** Task
-- **Titulo:** Implementar cliente de IA com validacao de resposta
-- **Status:** Done
-- **Dependencia:** FQA-203
-- **Criterio de aceite:** o sistema consulta a IA e rejeita respostas malformadas ou fora do contrato
-
-### FQA-205
-
-- **Tipo:** Task
-- **Titulo:** Registrar o payload de geracao e cura para auditoria
-- **Status:** Done
-- **Dependencia:** FQA-204
-- **Criterio de aceite:** cada tentativa de geracao ou cura guarda contexto minimo para diagnostico posterior
+- **Objetivo consolidado:** prompt, extracao de DOM, schema, cliente de IA e auditoria
 
 ---
 
@@ -224,15 +66,15 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 ### FQA-300
 
 - **Tipo:** Epic
-- **Titulo:** Implementar a recuperacao automatica de falhas de seletor
-- **Status:** Todo
-- **Objetivo:** fechar o fluxo ponta a ponta do MVP
+- **Titulo:** Endurecer a recuperacao automatica de falhas de seletor
+- **Status:** Doing
+- **Objetivo:** tornar o healing previsivel, seguro e reaproveitavel
 
 ### FQA-301
 
 - **Tipo:** Task
 - **Titulo:** Reexecutar a acao com o seletor sugerido pela IA
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-204
 - **Criterio de aceite:** o sistema tenta novamente a acao com fallback controlado apos resposta valida
 
@@ -264,7 +106,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Reusar memoria antes de consultar a IA
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-304
 - **Criterio de aceite:** o sistema consulta primeiro a memoria local antes de acionar a IA para o mesmo contexto
 
@@ -275,17 +117,17 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 ### FQA-400
 
 - **Tipo:** Epic
-- **Titulo:** Tornar o comportamento do MVP explicavel e demonstravel
-- **Status:** Todo
-- **Objetivo:** produzir evidencias claras do valor gerado pela automacao e pela auto-cura
+- **Titulo:** Tornar o comportamento da API explicavel e demonstravel
+- **Status:** Doing
+- **Objetivo:** produzir evidencias claras de planejamento, execucao e healing
 
 ### FQA-401
 
 - **Tipo:** Task
 - **Titulo:** Gerar logs estruturados por tentativa de geracao, execucao e cura
-- **Status:** Todo
+- **Status:** Doing
 - **Dependencia:** FQA-301
-- **Criterio de aceite:** o terminal ou artefato final mostra entrada, seletor original, seletor sugerido e resultado da retentativa
+- **Criterio de aceite:** o artefato final mostra entrada, seletor original, seletor sugerido, estrategia usada e resultado
 
 ### FQA-402
 
@@ -293,7 +135,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 - **Titulo:** Implementar relatorio resumido de execucao
 - **Status:** Todo
 - **Dependencia:** FQA-401
-- **Criterio de aceite:** o relatorio exibe total de testes, curas tentadas, curas concluidas e falhas finais
+- **Criterio de aceite:** o relatorio exibe total de steps, curas tentadas, curas concluidas e falhas finais
 
 ### FQA-403
 
@@ -301,82 +143,56 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 - **Titulo:** Definir score basico de qualidade do teste
 - **Status:** Todo
 - **Dependencia:** FQA-402
-- **Criterio de aceite:** existe uma formula simples e explicita para refletir o impacto das curas na qualidade percebida
+- **Criterio de aceite:** existe uma formula simples para refletir estabilidade do fluxo planejado
 
 ### FQA-404
 
 - **Tipo:** Task
-- **Titulo:** Salvar evidencias uteis para demo
+- **Titulo:** Salvar evidencias uteis para demo e diagnostico
 - **Status:** Todo
 - **Dependencia:** FQA-401
-- **Criterio de aceite:** a execucao consegue preservar logs, traces ou snapshots suficientes para demonstracao
+- **Criterio de aceite:** a execucao preserva logs, traces ou snapshots suficientes para demonstracao
 
 ---
 
-## Epic 5. Pipeline e Demonstracao
+## Epic 5. API Local e Painel Web
 
 ### FQA-500
 
 - **Tipo:** Epic
-- **Titulo:** Expor o MVP por API local e painel web para demonstracao
+- **Titulo:** Expor o motor por API local e painel web
 - **Status:** Doing
-- **Objetivo:** tornar o projeto amigavel para uso local e demonstracao sem depender de CLI como interface principal
+- **Objetivo:** tornar o produto utilizavel sem acoplamento a CLI
 
-### FQA-501
+### FQA-501 a FQA-504
 
-- **Tipo:** Task
-- **Titulo:** Criar contrato HTTP local para iniciar execucoes
+- **Tipo:** Tasks
 - **Status:** Done
-- **Dependencia:** FQA-100
-- **Criterio de aceite:** existe um endpoint local para receber URL, descricao do fluxo e parametros minimos da execucao
-
-### FQA-502
-
-- **Tipo:** Task
-- **Titulo:** Implementar endpoint local de status e resultado
-- **Status:** Done
-- **Dependencia:** FQA-501
-- **Criterio de aceite:** a execucao iniciada pode ser consultada por status e resultado final
-
-### FQA-503
-
-- **Tipo:** Task
-- **Titulo:** Criar painel web local para entrada de URL e fluxo
-- **Status:** Done
-- **Dependencia:** FQA-501
-- **Criterio de aceite:** o usuario consegue informar URL e descricao do fluxo por interface web local
-
-### FQA-504
-
-- **Tipo:** Task
-- **Titulo:** Exibir progresso, logs e resultado no painel web
-- **Status:** Done
-- **Dependencia:** FQA-502
-- **Criterio de aceite:** o painel mostra status de execucao, resultado final e logs basicos do fluxo
+- **Objetivo consolidado:** endpoints de execucao/status e painel web local com logs e resultado
 
 ### FQA-505
 
 - **Tipo:** Task
-- **Titulo:** Criar fixture ou pagina controlada para demonstrar a quebra
-- **Status:** Todo
+- **Titulo:** Criar fixture ou pagina controlada para demonstrar quebra de seletor
+- **Status:** Done
 - **Dependencia:** FQA-101
 - **Criterio de aceite:** existe um cenario reproduzivel em que uma mudanca de seletor quebra o teste original
 
 ### FQA-506
 
 - **Tipo:** Task
-- **Titulo:** Demonstrar a auto-cura no mesmo cenario controlado
-- **Status:** Todo
+- **Titulo:** Demonstrar auto-cura em cenario controlado
+- **Status:** Doing
 - **Dependencia:** FQA-304
-- **Criterio de aceite:** o fluxo mostra falha inicial, intervencao da IA e sucesso posterior da execucao
+- **Criterio de aceite:** o fluxo mostra falha inicial, estrategia de healing e sucesso posterior
 
 ### FQA-507
 
 - **Tipo:** Task
-- **Titulo:** Demonstrar a geracao automatica no mesmo cenario controlado
-- **Status:** Todo
+- **Titulo:** Demonstrar geracao automatica em cenario controlado
+- **Status:** Doing
 - **Dependencia:** FQA-104
-- **Criterio de aceite:** o fluxo mostra entrada textual, cenario gerado e execucao do teste resultante
+- **Criterio de aceite:** o fluxo mostra entrada textual, cenario gerado e execucao resultante
 
 ### FQA-508
 
@@ -392,7 +208,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 - **Titulo:** Preparar roteiro tecnico do video de apresentacao
 - **Status:** Todo
 - **Dependencia:** FQA-507
-- **Criterio de aceite:** existe uma sequencia objetiva para mostrar painel, geracao, execucao, falha, cura e reaproveitamento
+- **Criterio de aceite:** existe uma sequencia objetiva para mostrar painel, planejamento, execucao, falha, cura e reaproveitamento
 
 ---
 
@@ -428,17 +244,17 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 ### FQA-700
 
 - **Tipo:** Epic
-- **Titulo:** Endurecer o MVP apos o fluxo principal funcionar
+- **Titulo:** Endurecer o nucleo apos o fluxo principal funcionar
 - **Status:** Todo
-- **Objetivo:** reduzir risco tecnico e abrir caminho para evolucao do projeto
+- **Objetivo:** reduzir risco tecnico e abrir caminho para evolucao
 
 ### FQA-701
 
 - **Tipo:** Task
-- **Titulo:** Criar testes para o gerador de cenarios
-- **Status:** Todo
+- **Titulo:** Criar testes para o planner de cenarios
+- **Status:** Doing
 - **Dependencia:** FQA-103
-- **Criterio de aceite:** a geracao cobre casos simples e produz saida previsivel
+- **Criterio de aceite:** o planner cobre casos simples e produz saida previsivel
 
 ### FQA-702
 
@@ -452,7 +268,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Task
 - **Titulo:** Criar testes para validacao do retorno da IA
-- **Status:** Todo
+- **Status:** Doing
 - **Dependencia:** FQA-204
 - **Criterio de aceite:** respostas validas e invalidas sao tratadas de forma previsivel
 
@@ -460,9 +276,9 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 - **Tipo:** Story
 - **Titulo:** Ampliar suporte para novas acoes alem de `click` e `fill`
-- **Status:** Todo
+- **Status:** Doing
 - **Dependencia:** FQA-300
-- **Criterio de aceite:** o framework suporta pelo menos um novo tipo de acao mantendo o mesmo fluxo de cura
+- **Criterio de aceite:** o framework suporta novas acoes mantendo o mesmo fluxo de healing
 
 ### FQA-705
 
@@ -470,7 +286,7 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 - **Titulo:** Ampliar suporte para novas fontes de entrada alem de texto
 - **Status:** Todo
 - **Dependencia:** FQA-100
-- **Criterio de aceite:** o framework suporta pelo menos uma nova fonte de entrada mantendo o mesmo fluxo geral
+- **Criterio de aceite:** o framework suporta ao menos uma nova fonte de entrada mantendo o fluxo geral
 
 ### FQA-706
 
@@ -490,15 +306,84 @@ Este documento transforma o contexto e o roadmap do projeto em um backlog tecnic
 
 ---
 
+## Epic 8. Generalizacao da API E2E
+
+### FQA-800
+
+- **Tipo:** Epic
+- **Titulo:** Generalizar o Forge QA como API E2E orientada a intencao
+- **Status:** Doing
+- **Objetivo:** sair do fluxo fixture-specific e construir um motor reutilizavel para multiplos cenarios web
+
+### FQA-801
+
+- **Tipo:** Task
+- **Titulo:** Enriquecer o contrato de steps e actions do motor
+- **Status:** Done
+- **Dependencia:** FQA-105
+- **Criterio de aceite:** o motor suporta steps como `press`, `assertUrl`, `waitForNavigation` e metadados de navegacao
+
+### FQA-802
+
+- **Tipo:** Task
+- **Titulo:** Separar o planner heuristico do gerador antigo
+- **Status:** Done
+- **Dependencia:** FQA-103
+- **Criterio de aceite:** a geracao passa a depender de um planner dedicado e nao de um fluxo fixo codificado no gerador
+
+### FQA-803
+
+- **Tipo:** Task
+- **Titulo:** Adaptar o executor para novos tipos de step
+- **Status:** Done
+- **Dependencia:** FQA-801
+- **Criterio de aceite:** o executor entende novos steps sem quebrar a suite existente
+
+### FQA-804
+
+- **Tipo:** Task
+- **Titulo:** Implementar descoberta inicial de navegacao para autenticacao
+- **Status:** Done
+- **Dependencia:** FQA-802
+- **Criterio de aceite:** quando a URL inicial nao e uma tela de login, o planner tenta descobrir a entrada de autenticacao por heuristica
+
+### FQA-805
+
+- **Tipo:** Task
+- **Titulo:** Exibir o plano gerado pela API no painel web
+- **Status:** Todo
+- **Dependencia:** FQA-802
+- **Criterio de aceite:** o usuario consegue ver o cenario planejado antes ou durante a execucao
+
+### FQA-806
+
+- **Tipo:** Task
+- **Titulo:** Preparar contrato da API para fontes futuras e configuracoes de execucao
+- **Status:** Todo
+- **Dependencia:** FQA-501
+- **Criterio de aceite:** a API aceita um payload extensivel sem quebrar compatibilidade com o formato atual
+
+### FQA-807
+
+- **Tipo:** Story
+- **Titulo:** Generalizar heuristicas para fluxos alem de autenticacao
+- **Status:** Todo
+- **Dependencia:** FQA-802
+- **Criterio de aceite:** o planner passa a suportar ao menos mais uma classe de fluxo alem de autenticacao
+
+---
+
 ## Sprint Atual Recomendada
 
-Os itens que devem receber foco imediato agora sao:
+Os itens com maior valor imediato agora sao:
 
-- FQA-301
 - FQA-302
 - FQA-303
 - FQA-304
-- FQA-505
+- FQA-401
+- FQA-404
 - FQA-506
-- FQA-507
+- FQA-805
+- FQA-806
+- FQA-807
 - FQA-601

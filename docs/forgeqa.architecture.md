@@ -1,51 +1,46 @@
-# Arquitetura Inicial: Forge QA
+# Arquitetura: Forge QA
 
 ## 1. Objetivo
 
-Este documento descreve a arquitetura inicial do Forge QA para as fases iniciais do MVP.
+Este documento descreve a arquitetura alvo do `Forge QA` como uma API de orquestracao de testes E2E guiada por intencao, com geracao de fluxo, execucao, healing e observabilidade.
 
-O foco desta arquitetura e:
-
-- simplicidade de implementacao;
-- clareza sobre o fluxo de geracao automatica;
-- clareza sobre o fluxo de auto-cura;
-- clareza sobre a experiencia de uso local via API e painel web;
-- separacao basica entre geracao, execucao, contexto, IA e memoria;
-- evolucao segura para demonstracao e iteracoes futuras.
+A arquitetura deixa de tratar `login` como centro do produto. `Login` permanece apenas como um cenario de validacao. O produto precisa ser capaz de receber uma intencao de teste, planejar um fluxo executavel, navegar por estados da aplicacao, executar acoes, se recuperar de mudancas de UI e devolver um resultado auditavel.
 
 ---
 
 ## 2. Direcao Arquitetural
 
-Nesta fase, o Forge QA e um projeto em `TypeScript` executando localmente em `Node.js`, usando `Playwright` como motor de automacao, uma camada de IA para gerar cenarios iniciais de teste e outra camada de IA para recuperar falhas elegiveis de seletor.
+O `Forge QA` e um servico local em `TypeScript` sobre `Node.js`, usando `Playwright` como motor de automacao e a `OpenAI API` como camada de raciocinio para healing e, progressivamente, para planejamento.
 
-O projeto nao deve nascer como uma plataforma complexa de observabilidade ou orquestracao. A arquitetura inicial deve privilegiar um nucleo pequeno, testavel e demonstravel.
+A direcao principal agora e `API-first`:
 
-Para o MVP, a interface principal recomendada nao e CLI pura. O acesso deve acontecer por uma `API local` e um `painel web local`, mantendo o motor desacoplado para futuras interfaces como CLI ou desktop.
+- a interface principal do produto e uma API local de execucao;
+- o painel web e uma interface amigavel sobre essa API;
+- CLI e desktop passam a ser consumidores opcionais do mesmo motor;
+- o nucleo do produto e um motor de planejamento e execucao de fluxo E2E orientado a intencao.
 
 ### Direcao atual
 
-- runtime local: Node.js
-- linguagem principal: TypeScript
-- motor de automacao: Playwright
-- camada de IA: OpenAI Node.js SDK
-- persistencia inicial: arquivo JSON local para memoria de seletores curados
-- interface do MVP: painel web local consumindo API local
-- prioridade funcional atual: provar geracao automatica inicial de testes e auto-cura de acoes UI em cenarios controlados
+- runtime local: `Node.js`
+- linguagem principal: `TypeScript`
+- motor de automacao: `Playwright`
+- camada de IA: `OpenAI Node.js SDK`
+- interface principal: `API local` com `painel web`
+- persistencia inicial: memoria local de healing e historico de execucao
+- foco tecnico atual: generalizar o motor para fluxos E2E alem de casos fixos de login
 
 ### Direcao futura
 
-- ampliar suporte para mais tipos de fontes de entrada
-- ampliar suporte para mais tipos de acoes automatizadas
-- enriquecer o contexto enviado para a IA com heuristicas adicionais
-- evoluir relatorios tecnicos e evidencias de execucao
-- avaliar aplicacao desktop apenas depois do MVP web estabilizado
-- adicionar pipeline recorrente de execucao no GitHub Actions
-- avaliar memoria mais robusta para historico de curas e analytics
+- ampliar o planner para multiplos dominios de fluxo
+- suportar mais tipos de acao e asserts
+- enriquecer contexto para IA com DOM, estado e historico
+- persistir execucoes, curas e artefatos de forma mais robusta
+- expor o motor de forma recorrente em pipeline e ambientes compartilhados
+- avaliar multimodalidade e contexto visual como camada complementar, nao como base obrigatoria
 
 ---
 
-## 3. Estrutura Inicial de Pastas
+## 3. Estrutura de Pastas
 
 ```text
 docs/
@@ -57,21 +52,22 @@ src/
   app/
     api/
     web/
-  core/
-    actions/
-    generation/
-    healing/
-    reporting/
   ai/
     prompts/
     resolver/
+  core/
+    actions/
+    execution/
+    generation/
+    healing/
+    reporting/
   integrations/
     playwright/
   memory/
   types/
 tests/
-  specs/
   fixtures/
+  specs/
 storage/
   selectors.json
 .github/
@@ -80,187 +76,185 @@ storage/
 
 ### Responsabilidades
 
-- `src/index.ts`
-  ponto de entrada para bootstrap do projeto e inicializacao da execucao local
-
 - `src/app/api/`
-  endpoints locais para iniciar execucoes, consultar status e retornar artefatos
+  expor contratos HTTP para criar, consultar e futuramente listar execucoes, artefatos e historico
 
 - `src/app/web/`
-  interface web do MVP para entrada de URL e fluxo e exibicao dos resultados
-
-- `src/core/actions/`
-  contrato das acoes automatizadas e primitivas usadas pelo fluxo de teste
+  interface local para disparar fluxos, visualizar planejamento, logs, healing e resultado final
 
 - `src/core/generation/`
-  contratos de entrada, geracao inicial de cenarios e transformacao em artefatos executaveis
+  transformar entradas em cenarios planejados, sem depender de um caso fixo como login
+
+- `src/core/execution/`
+  coordenar o lifecycle da execucao, browser, auditoria e retorno final
+
+- `src/core/actions/`
+  definir o contrato interno das acoes automatizadas e metadados de execucao
 
 - `src/core/healing/`
-  logica de interceptacao de falhas, elegibilidade de cura, retentativa e controle do fluxo
+  interceptar falhas, decidir elegibilidade, montar contexto, consultar memoria/IA e reexecutar com seguranca
 
 - `src/core/reporting/`
-  agregacao de eventos, estatisticas de geracao, execucao e cura
-
-- `src/ai/prompts/`
-  definicao dos prompts e contratos de instrucao enviados para a IA
+  consolidar auditoria, eventos, estatisticas, score e artefatos de evidencias
 
 - `src/ai/resolver/`
-  cliente de IA, validacao da resposta estruturada e traducao para comandos internos
+  validar contratos de IA e traduzir respostas em comandos reutilizaveis pelo motor
 
 - `src/integrations/playwright/`
-  adaptadores entre os contratos do Forge QA e a API do Playwright
+  adaptar o contrato interno para a API concreta do Playwright
 
 - `src/memory/`
-  leitura e escrita da memoria local de seletores curados
+  persistir healing reaproveitavel e, no futuro, historico contextual de decisao
 
 - `src/types/`
-  tipos compartilhados entre geracao, execucao, IA, memoria e relatorio
-
-- `tests/specs/`
-  cenarios E2E e demonstracoes do MVP
-
-- `tests/fixtures/`
-  paginas, dados e ambientes controlados para reproducao de falhas
-
-- `storage/selectors.json`
-  persistencia inicial das curas aprovadas pelo fluxo automatizado
+  concentrar contratos compartilhados entre API, planner, executor, healer e relatorios
 
 ---
 
 ## 4. Componentes Principais
 
-### 4.1 Test Generator
+### 4.1 Intake API
 
-Camada responsavel por transformar uma fonte de entrada, inicialmente texto, em uma estrutura de cenario ou spec executavel.
+Recebe requisicoes com `url`, `flow`, parametros e contexto adicional. Seu contrato deve ser estavel, auditavel e desacoplado da interface.
 
-### 4.2 Local API
+### 4.2 Flow Planner
 
-Camada de acesso local que recebe URL, descricao de fluxo e parametros de execucao e orquestra o motor.
+Converte uma intencao textual em um `GeneratedTestScenario` com steps estruturados. O planner deve evoluir para suportar descoberta de navegacao, multiplos tipos de acao, asserts e fontes futuras.
 
-### 4.3 Web Panel
+### 4.3 Scenario Executor
 
-Interface amigavel do MVP para disparar execucoes e acompanhar logs, resultado e healing.
+Executa o plano passo a passo. Nao decide a intencao do fluxo; decide apenas como aplicar cada step com o runner e com o healer.
 
-### 4.4 Test Runner
+### 4.4 Action Layer
 
-Responsavel por iniciar e coordenar a execucao dos testes Playwright.
+Define a gramatica interna do motor: `click`, `fill`, `press`, `select`, `waitForNavigation`, `assertText`, `assertUrl` e futuras extensoes. Essa camada preserva intencao, seletor original e metadados para healing.
 
-### 4.5 Action Layer
+### 4.5 Playwright Runner
 
-Camada que encapsula operacoes como `click`, `fill` e `select`, mantendo a intencao da acao e o seletor original disponiveis para recuperacao.
+Implementa a execucao concreta dos steps no navegador, mantendo o motor livre de acoplamento direto a detalhes do Playwright.
 
 ### 4.6 Healer
 
-Componente central do diferencial tecnico. Decide se a falha pode ser tratada como fragilidade de automacao, monta o pedido de cura, aciona a IA, valida a resposta e tenta novamente.
+Camada de resiliencia. Usa memoria, fallbacks e IA para recuperar falhas de localizacao antes de declarar falha final.
 
 ### 4.7 DOM Extractor
 
-Extrai uma representacao simplificada da pagina, priorizando elementos interativos e metadados relevantes. Seu papel e reduzir ruido e custo.
+Extrai contexto enxuto da pagina atual, priorizando elementos interativos e reduzindo custo de inferencia.
 
 ### 4.8 AI Resolver
 
-Envia contratos objetivos para a IA, tanto para geracao quanto para cura, e recebe respostas estruturadas.
+Recebe um contrato fechado e devolve uma sugestao validada. Hoje atua no healing; no futuro, pode apoiar planejamento e classificacao.
 
 ### 4.9 Selector Memory
 
-Persiste curas bem-sucedidas para evitar chamadas repetidas a IA e tornar a automacao cumulativamente mais resiliente.
+Reaproveita curas bem-sucedidas para reduzir custo, latencia e variabilidade.
 
 ### 4.10 Reporter
 
-Consolida resultados da execucao, numero de geracoes, curas, sucessos, falhas e evidencias para demo e analise tecnica.
+Consolida entrada, plano, execucao, healing, erro final e artefatos para API, painel e pipeline.
 
 ---
 
 ## 5. Fluxo Arquitetural
 
-1. O usuario abre o `Web Panel` local e informa URL e descricao do fluxo.
-2. A `Local API` recebe a requisicao e orquestra o motor.
-3. O `Test Generator` cria um cenario ou spec inicial.
-4. O teste chama uma acao do Forge QA, por exemplo `healer.click(...)`.
-5. A camada de integracao tenta executar a acao via Playwright.
-6. Se a acao falhar por seletor nao encontrado, o `Healer` verifica elegibilidade.
-7. O `DOM Extractor` resume o estado atual da pagina.
-8. O `AI Resolver` recebe:
-   - a intencao da acao;
-   - o seletor original;
-   - o tipo de elemento esperado;
-   - o DOM resumido.
-9. A resposta da IA e validada contra um contrato estruturado.
-10. O Forge QA tenta novamente a acao com o seletor sugerido.
-11. Em caso de sucesso, a cura e registrada e persistida.
-12. O `Reporter` consolida o resultado e o `Web Panel` exibe logs e evidencias.
+1. O usuario ou sistema cliente envia `url` e `flow` para a `Intake API`.
+2. O `Flow Planner` transforma essa intencao em um `GeneratedTestScenario`.
+3. O `Scenario Executor` executa os steps planejados.
+4. Cada step operacional passa pela `Action Layer` e pelo `Playwright Runner`.
+5. Quando ha falha elegivel, o `Healer` tenta recuperar usando memoria e fallbacks.
+6. Se memoria/fallback nao bastarem, o `DOM Extractor` monta contexto para o `AI Resolver`.
+7. A resposta da IA e validada e, se segura, reaplicada na execucao.
+8. O `Reporter` consolida tudo em payloads auditaveis para a API e para o painel.
 
 ---
 
-## 6. Principios de Organizacao do Codigo
+## 6. Principios de Organizacao
 
-As proximas implementacoes devem seguir estes principios:
-
-- a fonte de entrada do teste deve ser tratada como contrato explicito;
-- a intencao da acao deve ser preservada alem do seletor cru;
-- integracao com Playwright deve ficar separada da regra de cura;
-- prompt e parsing de IA devem ser isolados da logica de execucao;
-- respostas da IA devem passar por validacao antes de uso;
-- toda intervencao automatica deve ser auditavel;
-- o MVP deve crescer por camadas, nao por acoplamento improvisado.
+- `login` nao deve dirigir a arquitetura; deve apenas validar um caso comum
+- planejar e executar sao responsabilidades distintas
+- o contrato de steps deve ser mais estavel que heuristicas de planning
+- healing deve ser explicavel, limitado e auditavel
+- integracoes concretas devem ficar atras de adaptadores
+- memoria e IA devem ser complementares, nao concorrentes
+- painel e API nao podem conter segredo nem logar credenciais em claro
 
 ---
 
-## 7. Sequencia de Evolucao
+## 7. Contrato de Fluxo
 
-### Fase 0
+O motor passa a trabalhar com um plano estruturado que pode conter, no minimo:
+
+- `navigate`
+- `click`
+- `fill`
+- `press`
+- `waitForNavigation`
+- `assertText`
+- `assertUrl`
+
+Esse contrato e o ponto de estabilidade da API. Heuristicas de planejamento podem evoluir sem quebrar o executor.
+
+---
+
+## 8. Sequencia de Evolucao
+
+### Fase 0. Fundacao
 
 - bootstrap do projeto
-- configuracao de TypeScript
-- setup do Playwright
-- estrutura inicial de pastas
+- TypeScript
+- Playwright
+- API local e painel
 
-### Fase 1
+### Fase 1. Core de Execucao
 
-- criacao de teste feliz de referencia
-- definicao do contrato de entrada para geracao
-- implementacao do gerador inicial de cenarios
-- definicao do contrato de acoes
+- contrato de steps
+- executor de cenarios
+- acoes basicas
+- auditoria inicial
 
-### Fase 2
+### Fase 2. Healing
 
-- transformacao da geracao em artefato executavel
-- extracao de DOM simplificado
-- contrato de prompt
-- cliente inicial de IA com resposta JSON
+- classificacao de falha elegivel
+- memoria local
+- extracao de DOM
+- consulta estruturada a IA
+- reexecucao controlada
 
-### Fase 3
+### Fase 3. Generalizacao da API
 
-- retentativa automatica com novo seletor
-- validacao de resposta
-- persistencia de curas em memoria local
+- planner desacoplado do caso de login
+- descoberta de navegacao inicial
+- asserts de URL e estado
+- contrato de execucao mais rico
+- exibicao do plano gerado no painel
 
-### Fase 4
+### Fase 4. Operacao
 
-- API local para execucao do motor
-- painel web para uso amigavel do MVP
-- relatorio de execucao
-- score basico de qualidade
-- pipeline inicial no GitHub Actions
-
----
-
-## 8. Decisoes Arquiteturais Iniciais
-
-- nao usar banco de dados no MVP inicial;
-- nao editar automaticamente o codigo-fonte dos testes;
-- nao tentar cobrir todas as fontes de entrada do desafio no primeiro corte;
-- nao tratar desktop como interface principal do primeiro corte;
-- nao usar multimodalidade como dependencia principal do primeiro corte;
-- nao tratar qualquer falha como curavel, apenas falhas elegiveis de localizacao;
-- nao transformar o projeto em plataforma fullstack antes de provar o nucleo.
+- pipeline recorrente
+- artefatos e traces
+- parametros de execucao sem UI
+- historico e relatorios mais robustos
 
 ---
 
-## 9. Observacoes Importantes
+## 9. Decisoes Arquiteturais
 
-- o valor do Forge QA depende de combinar geracao automatica, execucao e recuperacao;
-- a experiencia do MVP deve ser amigavel o bastante para demo sem depender de comandos manuais complexos;
-- a arquitetura deve favorecer demo reproduzivel, nao sofisticacao prematura;
-- a memoria de curas deve ser simples no inicio, mas o contrato precisa permitir evolucao;
-- a proxima meta concreta e construir um fluxo ponta a ponta em que um cenario seja gerado, executado e, se necessario, curado automaticamente.
+- nao reconstruir um runner concorrente ao Playwright
+- nao acoplar o painel ao motor diretamente; usar a API como fronteira
+- nao depender de analise de codigo-fonte do frontend/backend para a fase atual
+- nao permitir que a IA execute comandos arbitrarios fora do contrato interno
+- nao tratar qualquer falha como healing elegivel
+- nao expor credenciais em logs, auditoria ou payloads do painel
+
+---
+
+## 10. Meta Tecnica Atual
+
+A meta tecnica atual e fechar o primeiro bloco da `generalizacao da API`:
+
+- enriquecer o contrato de steps e actions
+- introduzir um `Flow Planner` separado do gerador antigo
+- suportar descoberta inicial de navegacao para autenticacao
+- preparar o executor para mais tipos de step sem regressao na suite atual
+
+Esse bloco nao conclui o produto final, mas estabelece a base correta para uma API funcional, extensivel e mais inovadora do que uma simples automacao guiada por seletores fixos.

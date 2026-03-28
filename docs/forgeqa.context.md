@@ -2,296 +2,218 @@
 
 ## 1. Visao Geral
 
-O `Forge QA` e uma proposta de framework de automacao de testes com apoio de IA alinhado ao desafio oficial da Second Mind, com prazo final em 02/04/2026.
+O `Forge QA` e uma API de orquestracao de testes E2E com IA, alinhada ao desafio oficial da Second Mind.
 
-O desafio oficial exige uma solucao que:
+O desafio pede uma solucao que:
 
 - gere testes automaticamente;
-- execute os testes automaticamente;
-- use IA em pelo menos um ponto relevante do fluxo;
-- entregue resultados claros com logs, evidencias e, idealmente, score de qualidade.
+- execute testes automaticamente;
+- use IA em um ponto relevante do fluxo;
+- entregue logs, evidencias e um resultado defensavel.
 
-Dentro desse contexto, o `Forge QA` foca em um problema recorrente em times de produto: testes que sao caros para criar, frageis para manter e pouco resilientes a mudancas pequenas na interface.
+A direcao atual do projeto deixa de tratar `login` como finalidade. `Login` passa a ser apenas um cenario inicial de validacao. O produto precisa ser capaz de receber uma intencao, planejar um fluxo executavel, navegar pela aplicacao, executar acoes, aplicar healing quando necessario e devolver um resultado auditavel por API.
 
 ## 2. Abstracao do Desafio
 
-O problema central nao e apenas executar testes automaticamente. Isso ja e resolvido por ferramentas como Playwright. O desafio real e criar um fluxo que gere testes com menos esforco manual, execute esses testes com previsibilidade e aumente a resiliencia da automacao sem perder controle.
+O problema real nao e apenas rodar testes com Playwright. Isso ja existe. O desafio e reduzir o custo entre `intencao -> teste executavel -> manutencao`.
 
-Em termos abstratos, o projeto precisa resolver cinco pontos:
+Em termos abstratos, o projeto precisa resolver:
 
-1. Transformar uma fonte de entrada util em cenarios ou testes executaveis.
-2. Executar automaticamente esses testes em um motor confiavel.
-3. Detectar quando uma falha foi causada por fragilidade de seletor, e nao por defeito real do produto.
-4. Reconstruir a intencao da acao original a partir do contexto disponivel.
-5. Registrar geracao, execucao e cura de forma auditavel para reaproveitamento futuro.
+1. transformar uma entrada util em um plano de teste estruturado;
+2. executar esse plano com previsibilidade;
+3. reconhecer quando uma falha e fragilidade de automacao, nao bug real;
+4. recuperar a execucao com memoria, heuristica e IA;
+5. registrar todas as decisoes de forma auditavel.
 
-A ideia, portanto, nao e apenas envolver o framework de testes com uma camada de cura. O produto precisa unir geracao automatica, execucao automatica e recuperacao inteligente em um fluxo coeso.
+O valor do produto esta em combinar `planejamento`, `execucao` e `healing` dentro do mesmo motor.
 
 ## 3. Necessidades do Projeto
 
-### 3.1 Necessidades de negocio
+### 3.1 Negocio
 
-- Demonstrar uso real de IA em um fluxo de engenharia, nao apenas um uso cosmetico.
-- Entregar algo funcional dentro do prazo de 02/04/2026.
-- Gerar uma narrativa forte para pitch, demo e avaliacao tecnica.
+- demonstrar IA aplicada em um fluxo real de engenharia;
+- entregar algo funcional e convincente dentro do prazo;
+- sustentar uma narrativa forte para pitch, avaliacao tecnica e demo.
 
-### 3.2 Necessidades tecnicas
+### 3.2 Tecnicas
 
-- Gerar testes ou cenarios automaticamente a partir de uma fonte de entrada.
-- Executar testes web de forma confiavel.
-- Interceptar falhas de localizacao de elementos.
-- Extrair contexto suficiente da tela sem enviar ruido desnecessario para a IA.
-- Solicitar respostas estruturadas e deterministicas da IA.
-- Reexecutar a acao com fallback seguro.
-- Persistir o aprendizado para reduzir chamadas futuras.
-- Produzir logs e relatorios que mostrem valor objetivo.
+- gerar cenarios a partir de texto e evoluir para novas fontes;
+- executar fluxos web com multiplas etapas;
+- descobrir caminhos iniciais de navegacao quando a URL nao e a tela final desejada;
+- aplicar healing com contexto compacto e resposta estruturada;
+- manter memoria local e observabilidade suficiente para explicar decisoes.
 
-### 3.3 Necessidades de produto
+### 3.3 Produto
 
-- Ter um MVP claro e demonstravel em poucos minutos.
-- Explicar facilmente o diferencial em relacao a uma suite Playwright comum.
-- Oferecer uma forma amigavel de uso para demo e operacao local.
-- Permitir evolucao posterior para mais tipos de acao, mais fontes de entrada e mais politicas de validacao.
+- expor uma API local clara e utilizavel;
+- oferecer uma interface amigavel sobre essa API;
+- suportar extensao para novos tipos de acao, asserts e fontes de entrada;
+- evitar que o produto fique preso a um caso unico como login.
 
 ## 4. Problema-Alvo
 
-A dor principal esta em dois pontos acumulados:
+As dores principais sao:
 
-- o custo de transformar requisitos ou fluxos em testes executaveis;
-- a manutencao de testes UI depois que eles ja existem.
+- custo para transformar requisitos em automacao executavel;
+- fragilidade de suites UI frente a pequenas mudancas da interface;
+- baixa confianca em automacao quando os testes falham por razoes erradas.
 
-Em suites tradicionais, pequenas mudancas como:
-
-- alteracao de `id`, `class` ou `data-testid`;
-- reorganizacao de containers;
-- troca de rotulo visivel;
-- introducao de componentes novos;
-
-podem quebrar testes validos do ponto de vista funcional.
-
-Isso gera tres efeitos ruins:
-
-- falso negativo: o produto funciona, mas o teste falha;
-- retrabalho: o time perde tempo criando ou corrigindo testes;
-- perda de confianca: a automacao passa a ser vista como fragil.
+Em suites tradicionais, pequenas alteracoes de `id`, texto, ordem de containers ou rotulo de CTA quebram testes validos. O resultado e retrabalho, falso negativo e perda de confianca.
 
 ## 5. Proposta de Solucao
 
-O `Forge QA` propoe um fluxo em duas camadas:
+O `Forge QA` propoe uma API com quatro camadas principais:
 
-1. `AI-assisted test generation`
-2. `AI-assisted self-healing`
+1. `flow intake`
+2. `flow planning`
+3. `execution + healing`
+4. `reporting`
 
-O primeiro passo atende a exigencia de gerar testes automaticamente. O segundo passo entrega o principal diferencial tecnico do projeto.
+Fluxo de alto nivel:
 
-Em alto nivel, o fluxo sera:
+1. receber `url` e `flow` por API;
+2. transformar a intencao em um `GeneratedTestScenario`;
+3. executar o plano no navegador;
+4. recuperar falhas elegiveis com memoria, heuristicas e IA;
+5. devolver status, auditoria, healing e evidencias.
 
-1. Receber uma fonte de entrada, inicialmente texto descritivo de fluxo ou cenario.
-2. Gerar um cenario ou spec executavel.
-3. Executar o teste automaticamente com Playwright.
-4. Se uma acao falhar por seletor quebrado, capturar a intencao da acao original.
-5. Extrair um snapshot simplificado da pagina atual.
-6. Enviar para a IA apenas o contexto relevante.
-7. Solicitar um novo seletor ou estrategia de localizacao.
-8. Validar a resposta recebida.
-9. Tentar novamente a acao.
-10. Registrar a geracao, a execucao e a cura, se houver.
+O diferencial da IA nao e apenas "inventar teste". E ajudar o sistema a manter a execucao coerente quando a interface muda e, progressivamente, enriquecer o planejamento.
 
-O valor da IA aqui nao e apenas inventar testes. E reduzir o gap entre intencao, execucao e manutencao da automacao.
+## 6. Hipotese da Fase Atual
 
-## 6. Hipotese do MVP
+Se o sistema conseguir planejar e executar fluxos E2E a partir de intencao textual, com descoberta inicial de navegacao, healing controlado e retorno auditavel por API, entao ele ja se torna uma base funcional e escalavel para o desafio.
 
-Se o framework conseguir gerar cenarios iniciais de teste a partir de entradas simples e recuperar automaticamente falhas comuns de seletor em cenarios web controlados, entao ele ja prova valor suficiente para:
+A fase atual nao deve ser tratada como um prototipo descartavel. Ela deve estabelecer contratos tecnicos corretos para evolucao da API.
 
-- reduzir esforco manual na criacao inicial de testes;
-- reduzir manutencao manual em casos comuns;
-- demonstrar um diferencial real de IA aplicada em QA;
-- justificar evolucoes futuras para cenarios mais complexos.
-
-O MVP nao precisa resolver todos os tipos de fonte nem todos os tipos de falha. Ele precisa resolver bem um recorte pequeno, visivel e defendivel.
-
-## 7. Escopo Recomendado do MVP
+## 7. Escopo Atual Recomendado
 
 ### Dentro do escopo
 
-- Testes web em Playwright.
-- Geracao automatica inicial a partir de texto descritivo.
-- API local para receber URL + descricao de fluxo.
-- Painel web local simples para acionar a execucao e visualizar resultados.
-- Acoes basicas como `click`, `fill` e possivelmente `select`.
-- Falhas relacionadas a seletor nao encontrado ou elemento nao localizavel.
-- Extracao de DOM simplificado com foco em elementos interativos.
-- Uso de IA para sugerir um novo seletor em JSON.
-- Retentativa automatica.
-- Persistencia local de seletores curados.
-- Relatorio final com eventos de geracao, execucao e cura.
+- API local para receber execucoes e retornar resultados
+- painel web local consumindo a API
+- planner heuristico de fluxo
+- steps como `navigate`, `click`, `fill`, `press`, `assertText`, `assertUrl` e `waitForNavigation`
+- healing com memoria, fallbacks e IA
+- extracao de DOM simplificada
+- auditoria de geracao, execucao e healing
+- casos controlados que provem descoberta de navegacao e auto-cura
 
-### Fora do escopo inicialmente
+### Fora do escopo atual
 
-- Suporte completo e generico para todas as fontes de entrada do desafio.
-- Aplicacao desktop nativa como interface principal.
-- Cura para regras de negocio quebradas.
-- Correcao de asserts de conteudo.
-- Interpretacao visual completa por screenshot multimodal.
-- Suporte a aplicacoes nativas ou mobile.
-- Aprendizado autonomo sem validacao.
-- Edicao automatica permanente do codigo-fonte do teste.
+- analise direta de codigo-fonte frontend/backend como dependencia principal
+- suporte completo a toda classe de aplicacoes web
+- multimodalidade como obrigatoria
+- autoedicao de codigo-fonte de testes
+- suporte nativo a desktop ou mobile
 
 ## 8. Requisitos Funcionais
 
-- O sistema deve aceitar ao menos uma fonte de entrada para geracao automatica de testes.
-- O sistema deve transformar essa entrada em um cenario ou estrutura executavel.
-- O sistema deve expor uma forma local de uso mais amigavel que CLI pura.
-- O sistema deve executar testes Playwright normalmente quando nao houver falhas.
-- O sistema deve interceptar falhas elegiveis de localizacao de elemento.
-- O sistema deve montar um contexto compacto e relevante da pagina.
-- A IA deve responder em formato estruturado, preferencialmente JSON.
-- O framework deve validar o retorno antes de reutiliza-lo.
-- O sistema deve reexecutar a acao com o novo seletor.
-- O sistema deve registrar sucesso, falha, seletor original, seletor sugerido e motivo da intervencao.
-- O sistema deve persistir curas reaproveitaveis para execucoes futuras.
+- aceitar ao menos entrada textual para planejar um fluxo
+- transformar a entrada em um plano estruturado de steps
+- executar o plano em Playwright
+- suportar multiplos tipos de step, nao apenas `click` e `fill`
+- descobrir o caminho inicial quando a URL fornecida nao e a tela final desejada
+- interceptar falhas elegiveis de localizacao de elemento
+- consultar memoria antes de acionar a IA
+- validar respostas da IA antes de reuso
+- expor status, resultado e auditoria pela API
+- preservar logs sem expor segredos em claro
 
 ## 9. Requisitos Nao Funcionais
 
-- Baixo acoplamento com os testes: a camada de geracao e a camada de cura devem envolver a automacao, nao poluir toda a suite.
-- Auditabilidade: toda intervencao da IA deve ser rastreavel.
-- Seguranca de execucao: a IA nao pode executar acoes arbitrarias fora do contrato esperado.
-- Custo controlado: o contexto enviado para a IA deve ser enxuto.
-- Determinismo razoavel: o prompt e a estrutura de resposta devem minimizar variacao inutil.
-- Facilidade de demo: o fluxo precisa ser reproduzivel em video curto.
+- `API-first`: o painel e outras interfaces devem consumir o mesmo motor
+- auditabilidade: toda decisao automatica precisa ser rastreavel
+- seguranca: a IA nao pode produzir acoes fora do contrato interno
+- custo controlado: contexto para IA precisa ser enxuto
+- extensibilidade: novos tipos de step nao devem quebrar o executor
+- demonstrabilidade: o valor precisa aparecer em uma demo curta
 
-## 10. Arquitetura Inicial Sugerida
+## 10. Componentes Principais
 
-- Linguagem: TypeScript
-- Framework de automacao: Playwright
-- Camada de IA: OpenAI Node.js SDK
-- Interface do MVP: API local + painel web
-- Execucao automatizada: GitHub Actions
-- Persistencia simples: arquivo JSON local para memoria de curas
-
-### Componentes principais
-
-- `Test Generator`: transforma entrada em cenarios ou specs executaveis.
-- `Test Runner`: executa os testes.
-- `Local API`: recebe requisicoes locais com URL, fluxo e configuracoes da execucao.
-- `Web Panel`: interface amigavel para disparar e acompanhar testes localmente.
-- `Healer`: intercepta falhas e coordena o processo de cura.
-- `DOM Extractor`: resume a pagina em contexto util.
-- `AI Resolver`: consulta a IA e recebe sugestoes estruturadas.
-- `Selector Memory`: armazena curas bem-sucedidas.
-- `Reporter`: resume execucao, falhas e intervencoes.
+- `Intake API`
+- `Flow Planner`
+- `Scenario Executor`
+- `Action Layer`
+- `Playwright Runner`
+- `Healer`
+- `DOM Extractor`
+- `AI Resolver`
+- `Selector Memory`
+- `Reporter`
 
 ## 11. Fluxo de Execucao Esperado
 
-1. O usuario abre o painel web local e informa URL e descricao do fluxo.
-2. A `Local API` recebe a requisicao e aciona o `Test Generator`.
-3. O `Test Generator` transforma essa entrada em um cenario ou spec executavel.
-4. O `Test Runner` tenta executar `click` ou `fill` com o seletor original.
-5. A acao falha por timeout ou ausencia do elemento.
-6. O `Healer` identifica que a falha e candidata a recuperacao.
-7. O `DOM Extractor` coleta apenas elementos relevantes da pagina.
-8. O `AI Resolver` recebe:
-   - a intencao da acao;
-   - o seletor original;
-   - o DOM resumido;
-   - metadados uteis como tipo de elemento e texto esperado.
-9. A IA retorna um novo seletor ou estrategia equivalente.
-10. O framework valida e reaplica a acao.
-11. Se funcionar, registra a cura e atualiza a memoria.
-12. O painel exibe resultado, logs e evidencias.
+1. o cliente envia `url` e `flow`;
+2. o planner gera um cenario estruturado;
+3. o executor aplica os steps no navegador;
+4. se houver falha elegivel, o healer tenta memoria e fallback;
+5. se necessario, a IA recebe contexto resumido da pagina;
+6. a sugestao e validada e reexecutada;
+7. a API devolve resultado, auditoria e artefatos relevantes.
 
 ## 12. Criterios de Sucesso
 
 O projeto sera bem-sucedido se entregar:
 
-- uma execucao funcional de teste automatizado;
-- pelo menos um fluxo demonstravel de geracao automatica de teste;
-- pelo menos um caso demonstravel de falha recuperada pela IA;
-- persistencia da cura para reuso posterior;
-- log claro mostrando antes, durante e depois da intervencao;
-- documentacao suficiente para explicar a arquitetura em poucos minutos.
+- execucao funcional de fluxos E2E por API;
+- planejamento automatizado a partir de texto;
+- pelo menos um caso de descoberta inicial de navegacao;
+- pelo menos um caso de healing demonstravel;
+- memoria reaproveitavel;
+- logs claros do plano e da execucao.
 
 ## 13. Riscos e Mitigacoes
 
-### Risco: contexto demais ou de menos
+### Risco: planner excessivamente heuristico
 
-Mitigacao: extrair apenas elementos interativos e metadados essenciais.
+Mitigacao: separar contrato de steps das heuristicas de planning e expandir por classes de fluxo.
 
-### Risco: resposta inconsistente da IA
+### Risco: IA sugerir seletor inadequado
 
-Mitigacao: exigir JSON estrito, validar schema e limitar o contrato de saida.
+Mitigacao: validar existencia, compatibilidade e limitar retentativas.
 
-### Risco: geracao produzir teste superficial ou pouco util
+### Risco: produto ficar preso a login
 
-Mitigacao: restringir o MVP a entradas simples, contrato de saida objetivo e fixture demonstravel.
+Mitigacao: tratar login apenas como fixture de validacao e planejar novas classes de fluxo.
 
-### Risco: a IA sugerir seletor incorreto
+### Risco: vazamento de segredos em auditoria
 
-Mitigacao: validar existencia, visibilidade e compatibilidade do elemento antes da acao final.
-
-### Risco: custo e latencia altos
-
-Mitigacao: usar memoria local de seletores e chamar a IA apenas em falhas elegiveis.
-
-### Risco: escopo crescer demais
-
-Mitigacao: restringir o MVP a poucas fontes de entrada, poucos tipos de acao e poucos cenarios controlados.
+Mitigacao: sanitizar payloads e nunca expor credenciais no painel.
 
 ## 14. Entregaveis
 
-- Codigo funcional do framework, do fluxo de geracao e do exemplo de teste.
-- Caso demonstrativo com geracao, execucao e auto-recuperacao.
-- README com arquitetura e instrucoes de execucao.
-- Video de demonstracao de ate 5 minutos.
+- codigo funcional da API local e do motor de execucao;
+- planner inicial de fluxo;
+- healing com IA e memoria;
+- casos demonstrativos controlados;
+- documentacao e roteiro tecnico suficientes para avaliacao.
 
-## 15. Roadmap de 7 Dias
+## 15. Roadmap Atual
 
-### Dia 1 - Fundacao
+### Etapa 1. Base pronta
 
-- Inicializar projeto Node.js.
-- Configurar TypeScript.
-- Instalar Playwright.
-- Instalar SDK da OpenAI.
-- Estruturar pastas base.
+- bootstrap, TypeScript, Playwright, API local e painel
 
-### Dia 2 - Fluxo base
+### Etapa 2. Core de execucao pronto
 
-- Criar teste feliz de referencia.
-- Definir contrato de entrada para geracao de testes.
-- Implementar gerador inicial de cenario.
+- gerador inicial, executor, healing base e cliente de IA
 
-### Dias 3 e 4 - Contexto + IA
+### Etapa 3. Generalizacao em andamento
 
-- Transformar geracao em spec ou fluxo executavel.
-- Construir extrator de DOM simplificado.
-- Definir prompt de sistema e formato JSON de resposta.
-- Implementar cliente de IA com validacao.
+- contrato de actions e steps mais rico
+- planner heuristico separado
+- descoberta inicial de navegacao para autenticacao
+- suporte a `assertUrl`, `press` e `waitForNavigation`
 
-### Dia 5 - Auto-cura
+### Etapa 4. Proximos blocos
 
-- Reexecutar acoes com seletor sugerido.
-- Persistir curas bem-sucedidas.
-- Evitar loops de retentativa.
+- validacao forte de healing
+- limite de retentativa
+- persistencia real da memoria
+- exibicao do plano no painel
+- generalizacao para fluxos alem de autenticacao
+- pipeline recorrente
 
-### Dia 6 - API local + painel web
+## 16. Mensagem Central
 
-- Expor uma API local para iniciar execucoes.
-- Criar painel web simples para URL + fluxo + resultado.
-- Mostrar progresso, logs e status final.
-
-### Dia 7 - Fechamento
-
-- Gerar relatorio final.
-- Exibir total de testes, curas e taxa de recuperacao.
-- Configurar pipeline basico no GitHub Actions.
-- Refinar README.
-- Preparar demo reproduzivel.
-- Gravar video mostrando geracao, quebra, cura e reaproveitamento.
-
-## 16. Mensagem Central do Projeto
-
-O diferencial do `Forge QA` nao e apenas rodar testes com IA. E gerar testes a partir de intencao, executa-los automaticamente e tornar a automacao menos fragil, mais reaproveitavel e mais proxima do comportamento esperado do que da rigidez do seletor original.
-
-Em uma frase:
-
-> Um framework que transforma intencao em teste executavel e, quando a interface muda, tenta entender, se adaptar e continuar de forma controlada.
+O `Forge QA` nao deve ser uma automacao de login com IA. Deve ser uma API que transforma intencao em fluxo E2E executavel, tenta manter esse fluxo operante quando a UI muda e devolve um resultado explicavel para engenharia e negocio.
