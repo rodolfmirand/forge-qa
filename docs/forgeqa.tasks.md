@@ -133,7 +133,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Implementar relatorio resumido de execucao
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-401
 - **Criterio de aceite:** o relatorio exibe total de steps, curas tentadas, curas concluidas e falhas finais
 
@@ -141,7 +141,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Definir score basico de qualidade do teste
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-402
 - **Criterio de aceite:** existe uma formula simples para refletir estabilidade do fluxo planejado
 
@@ -149,7 +149,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Salvar evidencias uteis para demo e diagnostico
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-401
 - **Criterio de aceite:** a execucao preserva logs, traces ou snapshots suficientes para demonstracao
 
@@ -225,7 +225,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Configurar workflow inicial no GitHub Actions
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-100
 - **Criterio de aceite:** o projeto executa a suite automatizada em pipeline de forma previsivel
 
@@ -233,7 +233,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Definir parametros minimos para execucao automatizada
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-501
 - **Criterio de aceite:** existe uma forma clara de disparar o motor sem interface grafica em ambiente automatizado
 
@@ -359,7 +359,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Preparar contrato da API para fontes futuras e configuracoes de execucao
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-501
 - **Criterio de aceite:** a API aceita um payload extensivel sem quebrar compatibilidade com o formato atual
 
@@ -367,7 +367,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Generalizar heuristicas para fluxos alem de autenticacao
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-802
 - **Criterio de aceite:** o planner passa a suportar ao menos mais uma classe de fluxo alem de autenticacao
 
@@ -377,11 +377,8 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 Os itens com maior valor imediato agora sao:
 
-- FQA-402
-- FQA-404
 - FQA-506
-- FQA-601
-- FQA-602
+- FQA-508
+- FQA-705
 - FQA-706
-- FQA-806
-- FQA-807
+- FQA-707
