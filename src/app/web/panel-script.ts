@@ -25,6 +25,7 @@ export function renderWebPanelScript(): string {
     '    "Memory/Fallback/AI: " + summary.memoryRecoveries + "/" + summary.fallbackRecoveries + "/" + summary.aiRecoveries,',
     '    "Falhas finais: " + summary.failedActions,',
     '    "Evidencias: " + summary.evidenceArtifacts,',
+    '    "Quality score: " + summary.qualityScore + " (" + summary.qualityLabel + ")",',
     '    "Status final: " + summary.finalStatus',
     '  ].join("\\n");',
     "}",
