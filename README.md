@@ -1,39 +1,36 @@
 # Forge QA
 
-Framework de automacao de testes com `Playwright` e IA para geracao, execucao e auto-recuperacao de testes.
+Framework de automacao de testes E2E com `Playwright` e IA para geracao, execucao e auto-recuperacao de fluxos.
 
 O objetivo do projeto e atender ao desafio da Second Mind com uma solucao que:
 
-- gera testes automaticamente a partir de entradas como texto, endpoints ou interface;
-- executa os testes automaticamente;
-- usa IA de forma util no fluxo;
-- reduz fragilidade de testes UI com uma camada de `self-healing`.
+- gera testes automaticamente a partir de intencao textual;
+- executa testes automaticamente em navegador real;
+- usa IA em pontos relevantes do fluxo;
+- reduz fragilidade de testes UI com `self-healing`;
+- devolve plano, resumo, quality score e evidencias.
 
-## Stack inicial
+## Stack
 
 - `TypeScript`
 - `Node.js`
 - `Playwright`
 - `OpenAI Node.js SDK`
 
-## Direcao do produto
+## Interfaces de uso
 
-O `Forge QA` nao e apenas uma suite Playwright. O produto passa a ter tres capacidades centrais:
+O `Forge QA` pode ser usado de tres formas:
 
-- `test generation`: transformar uma fonte de entrada em cenarios/specs executaveis;
-- `test execution`: rodar os testes e coletar evidencias;
-- `self-healing`: recuperar falhas elegiveis de seletor com apoio de IA.
-
-Para o MVP, a interface principal planejada passa a ser:
-
-- `API local`: para iniciar execucoes e consultar resultados
-- `painel web local`: para uso amigavel em demo e operacao local
+- `painel web local`
+- `API local`
+- `execucao headless` por CLI para jobs e automacao recorrente
 
 ## Scripts
 
-- `npm run dev`: executa a aplicacao local em modo watch
+- `npm run dev`: sobe a aplicacao local em modo watch
 - `npm run build`: compila o projeto para `dist/`
-- `npm run start`: executa a aplicacao local compilada
+- `npm run start`: executa a aplicacao compilada
+- `npm run execute -- --url <url> --flow <descricao>`: executa um fluxo sem painel, com saida no terminal
 - `npm run test`: roda a suite Playwright
 - `npm run test:headed`: roda a suite Playwright com browser visivel
 - `npm run test:ui`: abre a interface do Playwright
@@ -62,6 +59,7 @@ cp .env.example .env
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
 - `FORGEQA_SELECTOR_MEMORY_PATH`
+- `FORGEQA_ARTIFACTS_PATH`
 - `FORGEQA_PORT`
 
 4. Instale os navegadores do Playwright:
@@ -70,32 +68,63 @@ cp .env.example .env
 npx playwright install
 ```
 
-5. Suba a aplicacao local:
-
-```bash
-npm run dev
-```
-
-6. Abra no navegador:
-
-```text
-http://127.0.0.1:3000
-```
-
 ## Modos de IA
 
 - `FORGEQA_AI_MODE=mock`: usa o resolver local sem custo de API
 - `FORGEQA_AI_MODE=openai`: usa a API real da OpenAI quando `OPENAI_API_KEY` estiver configurada
 
-## Como usar hoje
+## Como usar
 
-1. Abra o painel web local.
-2. Informe a URL alvo ou use o fixture local de exemplo.
-3. Descreva o fluxo em texto.
-4. Dispare a execucao.
+### Painel web
+
+1. Suba a aplicacao local:
+
+```bash
+npm run dev
+```
+
+2. Abra no navegador:
+
+```text
+http://127.0.0.1:3000
+```
+
+3. Informe a URL alvo ou use um fixture local.
+4. Descreva o fluxo em texto.
 5. Acompanhe status, plano, quality score, logs, healing e evidencias no painel.
 
-## Estrutura inicial
+### Execucao recorrente
+
+Use o modo headless para CI, jobs locais ou automacao externa:
+
+```bash
+npm run execute -- --url https://example.com --flow "Pesquise por 'Forge QA'" --output pretty
+```
+
+Argumentos suportados:
+
+- `--url`
+- `--flow`
+- `--source-type`
+- `--max-healing-attempts`
+- `--requested-by`
+- `--labels`
+- `--output pretty|json`
+
+## Estado atual
+
+A base agora cobre:
+
+- planner heuristico para autenticacao e busca
+- executor com `navigate`, `click`, `fill`, `press`, `assertText`, `assertUrl` e `waitForNavigation`
+- healing com memoria, fallback e IA
+- memoria persistida em disco
+- API local com `options` e `metadata`
+- painel web com plano, resumo, quality score e links de evidencia
+- execucao headless para uso recorrente
+- workflow inicial de CI no GitHub Actions
+
+## Estrutura
 
 ```text
 docs/
@@ -110,6 +139,8 @@ tests/
   fixtures/
   specs/
 storage/
+.github/
+  workflows/
 ```
 
 ## Documentacao
@@ -117,19 +148,3 @@ storage/
 - [Contexto](./docs/forgeqa.context.md)
 - [Arquitetura](./docs/forgeqa.architecture.md)
 - [Tarefas](./docs/forgeqa.tasks.md)
-
-## Estado atual
-
-A base agora cobre:
-
-- bootstrap do repositório
-- configuracao TypeScript
-- configuracao Playwright
-- configuracao de lint e formatacao
-- estrutura inicial para geracao automatica de testes
-- estrutura inicial para execucao e `self-healing`
-- modo `mock` e modo `openai` para a camada de resolucao
-- API local para iniciar execucoes
-- painel web local para demonstracao e uso manual
-- exibicao do plano gerado, resumo de execucao, quality score e links para evidencias
-- contrato de API extensivel com `options` e `metadata`
