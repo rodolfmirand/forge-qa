@@ -173,6 +173,17 @@ export function createLocalServer(
             return;
           }
 
+          if (request.method === "GET" && url.pathname === "/fixtures/healing-login") {
+            const fixturePath = path.resolve(process.cwd(), "tests/fixtures/healing-login.html");
+            const content = await readFile(fixturePath, "utf8");
+
+            response.writeHead(200, {
+              "Content-Type": "text/html; charset=utf-8"
+            });
+            response.end(content);
+            return;
+          }
+
           sendJson(response, 404, { error: "Not found." });
         });
 
