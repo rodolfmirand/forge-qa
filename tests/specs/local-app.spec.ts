@@ -60,7 +60,7 @@ test.describe("local app", () => {
     });
     expect(pageErrors).toEqual([]);
     await expect(page.locator("#execution-logs")).toContainText("Audit entries:");
-    await expect(page.locator("#execution-logs")).toContainText("Click the sign in action.");
+    await expect(page.locator("#execution-logs")).toContainText("Submit the authentication form.");
     await expect(page.locator("#execution-logs")).toContainText("[REDACTED]");
   });
 });

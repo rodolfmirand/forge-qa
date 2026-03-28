@@ -30,10 +30,12 @@ test("generated flow can be executed end-to-end with healing", async ({ page }) 
     content: "Open the login page, submit the form and validate the dashboard state.",
     targetUrl: fixtureUrl
   });
-  const clickStep = scenario.steps.find((step) => step.kind === "click");
+  const clickStep = scenario.steps.find(
+    (step) => step.kind === "click" && step.description.includes("authentication form")
+  );
 
   if (!clickStep || clickStep.kind !== "click") {
-    throw new Error("Expected generated scenario to contain a click step.");
+    throw new Error("Expected generated scenario to contain an authentication submit step.");
   }
 
   clickStep.selector = "#login-button";
@@ -54,4 +56,30 @@ test("generated flow can be executed end-to-end with healing", async ({ page }) 
       return payload.recoveredSelector === "#submit-login";
     })
   ).toBeTruthy();
+});
+
+test("generated flow can discover the login entry point before authenticating", async ({
+  page
+}) => {
+  const fixturePath = path.resolve(process.cwd(), "tests/fixtures/home-entry.html");
+  const fixtureUrl = pathToFileURL(fixturePath).href;
+  const generator = new TemplateTestGenerator();
+  const healer = new Healer({
+    actionRunner: new PlaywrightPageActionRunner(page),
+    aiResolver: new MockAIResolver(),
+    selectorMemory: new InMemorySelectorMemory(),
+    domExtractor: new PlaywrightDOMExtractor(page)
+  });
+  const executor = new GeneratedScenarioExecutor(page, healer);
+  const scenario = await generator.generate({
+    title: "Portal login flow",
+    sourceType: "text",
+    content:
+      "Acesse o site e faca login com as credenciais abaixo. Valide que o usuario chegou ao Dashboard:\n- email: edoc@gmail.com\n- senha: abc123",
+    targetUrl: fixtureUrl
+  });
+
+  await executor.execute(scenario);
+
+  await expect(page.locator("#result")).toContainText("Dashboard");
 });
