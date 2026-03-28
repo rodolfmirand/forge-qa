@@ -6,6 +6,7 @@ test.describe("local app", () => {
   let server: LocalServerInstance;
   let previousSelectorMemoryPath: string | undefined;
   let previousArtifactsPath: string | undefined;
+  let previousAiMode: string | undefined;
   const selectorMemoryPath = path.resolve(
     process.cwd(),
     "storage",
@@ -16,8 +17,10 @@ test.describe("local app", () => {
   test.beforeAll(async () => {
     previousSelectorMemoryPath = process.env.FORGEQA_SELECTOR_MEMORY_PATH;
     previousArtifactsPath = process.env.FORGEQA_ARTIFACTS_PATH;
+    previousAiMode = process.env.FORGEQA_AI_MODE;
     process.env.FORGEQA_SELECTOR_MEMORY_PATH = selectorMemoryPath;
     process.env.FORGEQA_ARTIFACTS_PATH = artifactsPath;
+    process.env.FORGEQA_AI_MODE = "mock";
 
     server = createLocalServer(0);
     await server.start();
@@ -36,6 +39,12 @@ test.describe("local app", () => {
       process.env.FORGEQA_ARTIFACTS_PATH = previousArtifactsPath;
     } else {
       delete process.env.FORGEQA_ARTIFACTS_PATH;
+    }
+
+    if (previousAiMode) {
+      process.env.FORGEQA_AI_MODE = previousAiMode;
+    } else {
+      delete process.env.FORGEQA_AI_MODE;
     }
   });
 
@@ -110,9 +119,40 @@ test.describe("local app", () => {
     await expect(page.locator("#execution-summary")).toContainText("Quality score:");
     await expect(page.locator("#execution-summary")).toContainText("Status final: passed");
     await expect(page.locator("#execution-artifacts a")).toHaveCount(1);
+    await expect(page.locator("#execution-healing")).toContainText(
+      "Nenhuma recuperacao registrada."
+    );
     await expect(page.locator("#execution-logs")).toContainText("Planned steps:");
     await expect(page.locator("#execution-logs")).toContainText("Submit the authentication form.");
     await expect(page.locator("#execution-logs")).toContainText("Audit entries:");
     await expect(page.locator("#execution-logs")).toContainText("[REDACTED]");
+  });
+
+  test("web panel can demonstrate explicit ai healing details", async ({ page }) => {
+    await page.goto(server.origin);
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          Boolean((window as Window & { __forgeQaLoaded?: boolean }).__forgeQaLoaded)
+        )
+      )
+      .toBeTruthy();
+
+    await page.getByRole("button", { name: "Usar demo de healing" }).click();
+    await expect(page.locator("#url")).toHaveValue("/fixtures/healing-login");
+    await page.getByRole("button", { name: "Executar fluxo" }).click();
+
+    await expect(page.locator("#execution-status")).toHaveText("passed", {
+      timeout: 20000
+    });
+    await expect(page.locator("#execution-summary")).toContainText("Memory/Fallback/AI: 0/0/1");
+    await expect(page.locator("#execution-healing")).toContainText("Estrategia: ai");
+    await expect(page.locator("#execution-healing")).toContainText(
+      'Selector original: button[type="submit"]'
+    );
+    await expect(page.locator("#execution-healing")).toContainText(
+      "Selector recuperado: #submit-authentication-form"
+    );
+    await expect(page.locator("#execution-logs")).toContainText("#submit-authentication-form");
   });
 });
