@@ -11,6 +11,8 @@ export interface ExecutionSummary {
   aiRecoveries: number;
   failedActions: number;
   evidenceArtifacts: number;
+  qualityScore: number;
+  qualityLabel: "strong" | "stable" | "degraded" | "critical";
   finalStatus: "passed" | "failed";
 }
 
@@ -19,6 +21,44 @@ interface SummaryInput {
   auditEntries: AuditEntry[];
   status: "passed" | "failed";
   artifacts?: ExecutionArtifact[];
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function calculateQualityScore(params: {
+  healingAttempts: number;
+  memoryRecoveries: number;
+  fallbackRecoveries: number;
+  aiRecoveries: number;
+  failedActions: number;
+}): number {
+  const baseScore = 100;
+  const penalty =
+    params.healingAttempts * 5 +
+    params.memoryRecoveries * 2 +
+    params.fallbackRecoveries * 5 +
+    params.aiRecoveries * 10 +
+    params.failedActions * 40;
+
+  return clamp(baseScore - penalty, 0, 100);
+}
+
+function classifyQuality(score: number): ExecutionSummary["qualityLabel"] {
+  if (score >= 90) {
+    return "strong";
+  }
+
+  if (score >= 75) {
+    return "stable";
+  }
+
+  if (score >= 50) {
+    return "degraded";
+  }
+
+  return "critical";
 }
 
 export function createExecutionSummary(input: SummaryInput): ExecutionSummary {
@@ -54,6 +94,15 @@ export function createExecutionSummary(input: SummaryInput): ExecutionSummary {
     }
   }
 
+  const failedActions = input.status === "failed" ? 1 : 0;
+  const qualityScore = calculateQualityScore({
+    healingAttempts,
+    memoryRecoveries,
+    fallbackRecoveries,
+    aiRecoveries,
+    failedActions
+  });
+
   return {
     totalSteps: input.plannedScenario?.steps.length ?? 0,
     healingAttempts,
@@ -61,8 +110,10 @@ export function createExecutionSummary(input: SummaryInput): ExecutionSummary {
     memoryRecoveries,
     fallbackRecoveries,
     aiRecoveries,
-    failedActions: input.status === "failed" ? 1 : 0,
+    failedActions,
     evidenceArtifacts: input.artifacts?.length ?? 0,
+    qualityScore,
+    qualityLabel: classifyQuality(qualityScore),
     finalStatus: input.status
   };
 }

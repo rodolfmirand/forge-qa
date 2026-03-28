@@ -34,12 +34,20 @@ function extractQuotedLabels(content: string): string[] {
 }
 
 function inferExpectedText(content: string): string | null {
-  const explicitMatch = content.match(
-    /(valide|validate|confirme|confirm)\s+(que\s+)?(?:o\s+texto|a\s+pagina|page)?\s*(?:contenha|contains?|mostre|shows?)\s*["“”']([^"“”']+)["“”']/i
+  const explicitVerbFirstMatch = content.match(
+    /(valide|validate|confirme|confirm)\s+(que\s+)?(?:o\s+texto|a\s+pagina|page)?\s*(?:contenha|contains?|mostre|shows?|apare[cç]a)\s*["“”']([^"“”']+)["“”']/i
   );
 
-  if (explicitMatch?.[3]) {
-    return explicitMatch[3].trim();
+  if (explicitVerbFirstMatch?.[3]) {
+    return explicitVerbFirstMatch[3].trim();
+  }
+
+  const explicitQuotedTextMatch = content.match(
+    /(valide|validate|confirme|confirm).{0,80}(?:texto|text).{0,10}["“”']([^"“”']+)["“”'].{0,30}(?:contenha|contains?|mostre|shows?|apare[cç]a)/i
+  );
+
+  if (explicitQuotedTextMatch?.[2]) {
+    return explicitQuotedTextMatch[2].trim();
   }
 
   const lower = content.toLowerCase();
@@ -79,6 +87,29 @@ function inferExpectedUrlIncludes(content: string): string | null {
 
 function isAuthenticationIntent(content: string): boolean {
   return /(login|log in|sign in|entrar|acessar|autentic|senha|password)/i.test(content);
+}
+
+function isSearchIntent(content: string): boolean {
+  return /(search|pesquis|buscar|busque|procure|procura)/i.test(content);
+}
+
+function parseSearchQuery(content: string): string | null {
+  const explicitMatch = content.match(
+    /(pesquise|pesquisar|buscar|busque|search(?: for)?)\s+(?:por\s+)?["“”']([^"“”']+)["“”']/i
+  );
+
+  if (explicitMatch?.[2]) {
+    return explicitMatch[2].trim();
+  }
+
+  const labelledMatch = content.match(/(termo|query|busca|pesquisa)\s*:\s*([^\n\r]+)/i);
+
+  if (labelledMatch?.[2]) {
+    return labelledMatch[2].trim();
+  }
+
+  const quotedLabels = extractQuotedLabels(content);
+  return quotedLabels[0] ?? null;
 }
 
 function targetLooksLikeAuthenticationEntry(targetUrl?: string): boolean {
@@ -150,6 +181,37 @@ function buildAuthenticationSteps(content: string): GeneratedTestStep[] {
   ];
 }
 
+function buildSearchSteps(content: string): GeneratedTestStep[] {
+  const query = parseSearchQuery(content) ?? "forge qa";
+  const searchFieldSelector = 'input[type="search"]';
+  const searchFieldFallbacks = [
+    'input[name*="search" i]',
+    'input[id*="search" i]',
+    'input[name*="query" i]',
+    'input[name="q" i]',
+    'input[placeholder*="search" i]',
+    'input[placeholder*="pesquis" i]',
+    'input[placeholder*="buscar" i]'
+  ];
+
+  return [
+    {
+      kind: "fill",
+      description: "Fill the search field.",
+      selector: searchFieldSelector,
+      fallbackSelectors: searchFieldFallbacks,
+      value: query
+    },
+    {
+      kind: "press",
+      description: "Submit the search query.",
+      selector: searchFieldSelector,
+      fallbackSelectors: searchFieldFallbacks,
+      key: "Enter"
+    }
+  ];
+}
+
 function buildExplicitClickSteps(content: string): GeneratedTestStep[] {
   if (!/(click|clique)/i.test(content)) {
     return [];
@@ -177,6 +239,7 @@ export class HeuristicFlowPlanner {
     const expectedText = inferExpectedText(input.content);
     const expectedUrlIncludes = inferExpectedUrlIncludes(input.content);
     const wantsAuthentication = isAuthenticationIntent(input.content);
+    const wantsSearch = !wantsAuthentication && isSearchIntent(input.content);
     const targetIsAuthenticationEntry = targetLooksLikeAuthenticationEntry(input.targetUrl);
     const steps: GeneratedTestStep[] = [
       {
@@ -192,6 +255,8 @@ export class HeuristicFlowPlanner {
 
     if (wantsAuthentication) {
       steps.push(...buildAuthenticationSteps(input.content));
+    } else if (wantsSearch) {
+      steps.push(...buildSearchSteps(input.content));
     } else {
       steps.push(...buildExplicitClickSteps(input.content));
     }
