@@ -32,6 +32,7 @@ A direcao principal agora e `API-first`:
 ### Direcao futura
 
 - ampliar o planner para multiplos dominios de fluxo
+- suportar planejamento semantico de CRUD e fluxos de backoffice multi-etapa
 - suportar mais tipos de acao e asserts
 - enriquecer contexto para IA com DOM, estado e historico
 - persistir execucoes, curas e artefatos de forma mais robusta
@@ -119,7 +120,7 @@ Recebe requisicoes com `url`, `flow`, parametros e contexto adicional. Seu contr
 
 ### 4.2 Flow Planner
 
-Converte uma intencao textual em um `GeneratedTestScenario` com steps estruturados. O planner deve evoluir para suportar descoberta de navegacao, multiplos tipos de acao, asserts e fontes futuras.
+Converte uma intencao textual em um `GeneratedTestScenario` com steps estruturados. O planner deve evoluir para suportar descoberta de navegacao, multiplos tipos de acao, asserts, checkpoints intermediarios e fluxos complexos de CRUD orientados a entidade.
 
 ### 4.3 Scenario Executor
 
@@ -248,6 +249,13 @@ Esse contrato e o ponto de estabilidade da API. Heuristicas de planejamento pode
 - parametros de execucao sem UI
 - historico e relatorios mais robustos
 
+### Fase 5. Planner de Fluxos Complexos
+
+- decompor CRUD em etapas navegaveis
+- entender modulos, entidades e formularios longos
+- inserir checkpoints intermediarios de validacao
+- suportar modais, grids, selects e confirmacoes de sucesso
+
 ---
 
 ## 9. Decisoes Arquiteturais
@@ -263,11 +271,13 @@ Esse contrato e o ponto de estabilidade da API. Heuristicas de planejamento pode
 
 ## 10. Meta Tecnica Atual
 
-A meta tecnica atual e fechar o primeiro bloco da `generalizacao da API`:
+A proxima meta tecnica critica e abrir o segundo bloco da `generalizacao da API`: o planner para fluxos complexos.
 
-- enriquecer o contrato de steps e actions
-- introduzir um `Flow Planner` separado do gerador antigo
-- suportar descoberta inicial de navegacao para autenticacao
-- preparar o executor para mais tipos de step sem regressao na suite atual
+Esse bloco deve:
 
-Esse bloco nao conclui o produto final, mas estabelece a base correta para uma API funcional, extensivel e mais inovadora do que uma simples automacao guiada por seletores fixos.
+- decompor instrucoes de CRUD em etapas executaveis
+- descobrir navegacao interna ate modulos e entidades de negocio
+- planejar formularios com campos heterogeneos, modais e confirmacoes
+- introduzir checkpoints intermediarios para reduzir ambiguidade em fluxos longos
+
+Esse passo aproxima o Forge QA de uma API realmente util para sistemas de backoffice, como o exemplo de cadastro de servicos dentro da Sante, e nao apenas para demonstracoes de login ou busca.

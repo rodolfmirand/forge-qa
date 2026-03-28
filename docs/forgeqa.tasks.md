@@ -373,11 +373,79 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 ---
 
+## Epic 9. Planner para Fluxos Complexos
+
+### FQA-900
+
+- **Tipo:** Epic
+- **Titulo:** Evoluir o planner para fluxos complexos e CRUD real
+- **Status:** Todo
+- **Objetivo:** permitir que a API planeje fluxos multi-etapa de backoffice, como cadastros, edicoes e validacoes mais ricas
+
+### FQA-901
+
+- **Tipo:** Story
+- **Titulo:** Modelar intencoes de CRUD multi-etapa no planner
+- **Status:** Todo
+- **Dependencia:** FQA-807
+- **Criterio de aceite:** o planner consegue decompor instrucoes como criar, editar e remover registros em uma sequencia coerente de steps
+
+### FQA-902
+
+- **Tipo:** Story
+- **Titulo:** Descobrir navegacao interna por contexto de menu, modulo e entidade
+- **Status:** Todo
+- **Dependencia:** FQA-804
+- **Criterio de aceite:** o planner consegue sair da home autenticada e localizar modulos como Organizacao, Servicos e cadastros relacionados
+
+### FQA-903
+
+- **Tipo:** Story
+- **Titulo:** Planejar interacoes de formularios complexos
+- **Status:** Todo
+- **Dependencia:** FQA-704
+- **Criterio de aceite:** o planner passa a gerar steps para selects, radios, checkboxes, modais e tabelas com contexto suficiente para execucao
+
+### FQA-904
+
+- **Tipo:** Task
+- **Titulo:** Introduzir checkpoints intermediarios de validacao
+- **Status:** Todo
+- **Dependencia:** FQA-901
+- **Criterio de aceite:** fluxos longos passam a validar estado entre etapas, e nao apenas no resultado final
+
+### FQA-905
+
+- **Tipo:** Story
+- **Titulo:** Planejar CRUD orientado a entidade e campos
+- **Status:** Todo
+- **Dependencia:** FQA-903
+- **Criterio de aceite:** a API entende instrucoes como cadastrar um servico da organizacao com nome, categoria, valor e confirmacao de sucesso
+
+### FQA-906
+
+- **Tipo:** Task
+- **Titulo:** Criar fixtures e suites para cenarios complexos de CRUD
+- **Status:** Todo
+- **Dependencia:** FQA-905
+- **Criterio de aceite:** existem cenarios controlados que provam planejamento e execucao de CRUD alem de login e busca
+
+### FQA-907
+
+- **Tipo:** Spike
+- **Titulo:** Avaliar uso progressivo de IA no planejamento de fluxos complexos
+- **Status:** Todo
+- **Dependencia:** FQA-905
+- **Criterio de aceite:** existe uma estrategia objetiva para decidir quando o planner heuristico basta e quando a IA deve complementar o planejamento
+
+---
+
 ## Sprint Atual Recomendada
 
 Os itens com maior valor imediato agora sao:
 
 - FQA-509
-- FQA-705
-- FQA-706
-- FQA-707
+- FQA-901
+- FQA-902
+- FQA-903
+- FQA-905
