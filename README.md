@@ -91,7 +91,18 @@ http://127.0.0.1:3000
 
 3. Informe a URL alvo ou use um fixture local.
 4. Descreva o fluxo em texto.
-5. Acompanhe status, plano, quality score, logs, healing e evidencias no painel.
+5. Acompanhe status, plano, quality score, healing, logs e evidencias no painel.
+
+### Demos recomendadas
+
+- `Demo base`
+  URL: `/fixtures/login-flow`
+  Fluxo: login simples para validar geracao, execucao e evidencias
+
+- `Demo de healing`
+  URL: `/fixtures/healing-login`
+  Fluxo: login simples em fixture com CTA fora do padrao
+  Resultado esperado: o painel mostra a estrategia `ai` e o seletor recuperado `#submit-authentication-form`
 
 ### Execucao recorrente
 
@@ -121,6 +132,7 @@ A base agora cobre:
 - memoria persistida em disco
 - API local com `options` e `metadata`
 - painel web com plano, resumo, quality score e links de evidencia
+- painel web com destaque explicito para recuperacoes por `memory`, `fallback` e `ai`
 - execucao headless para uso recorrente
 - workflow inicial de CI no GitHub Actions
 
