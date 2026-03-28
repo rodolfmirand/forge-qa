@@ -82,7 +82,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Validar existencia e adequacao do elemento sugerido
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-301
 - **Criterio de aceite:** o framework verifica se o elemento encontrado e compativel com a intencao da acao
 
@@ -90,7 +90,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Evitar loops infinitos de retentativa
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-301
 - **Criterio de aceite:** a cura possui limite explicito de tentativas e falha de modo previsivel
 
@@ -98,7 +98,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Persistir curas bem-sucedidas em memoria local
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-302
 - **Criterio de aceite:** uma cura bem-sucedida pode ser reaproveitada em execucoes futuras sem nova consulta a IA
 
@@ -125,7 +125,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Gerar logs estruturados por tentativa de geracao, execucao e cura
-- **Status:** Doing
+- **Status:** Done
 - **Dependencia:** FQA-301
 - **Criterio de aceite:** o artefato final mostra entrada, seletor original, seletor sugerido, estrategia usada e resultado
 
@@ -245,7 +245,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Endurecer o nucleo apos o fluxo principal funcionar
-- **Status:** Todo
+- **Status:** Doing
 - **Objetivo:** reduzir risco tecnico e abrir caminho para evolucao
 
 ### FQA-701
@@ -351,7 +351,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Exibir o plano gerado pela API no painel web
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-802
 - **Criterio de aceite:** o usuario consegue ver o cenario planejado antes ou durante a execucao
 
@@ -377,13 +377,11 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 Os itens com maior valor imediato agora sao:
 
-- FQA-302
-- FQA-303
-- FQA-304
-- FQA-401
+- FQA-402
 - FQA-404
 - FQA-506
-- FQA-805
+- FQA-601
+- FQA-602
+- FQA-706
 - FQA-806
 - FQA-807
-- FQA-601
