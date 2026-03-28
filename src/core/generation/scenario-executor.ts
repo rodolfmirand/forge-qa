@@ -47,8 +47,36 @@ export class GeneratedScenarioExecutor {
           kind: "click",
           selector: step.selector,
           description: step.description,
+          ...(step.fallbackSelectors ? { fallbackSelectors: step.fallbackSelectors } : {}),
+          ...(step.waitForNavigation ? { waitForNavigation: true } : {})
+        });
+        return;
+      }
+      case "press": {
+        if (!step.selector || !step.key) {
+          throw new Error(`Press step is incomplete: ${step.description}`);
+        }
+
+        await this.healer.execute({
+          kind: "press",
+          selector: step.selector,
+          description: step.description,
+          key: step.key,
           ...(step.fallbackSelectors ? { fallbackSelectors: step.fallbackSelectors } : {})
         });
+        return;
+      }
+      case "waitForNavigation": {
+        if (!step.urlIncludes) {
+          await this.page.waitForLoadState("domcontentloaded");
+          return;
+        }
+
+        await expect
+          .poll(() => this.page.url(), {
+            message: step.description
+          })
+          .toContain(step.urlIncludes);
         return;
       }
       case "assertText": {
@@ -57,6 +85,18 @@ export class GeneratedScenarioExecutor {
         }
 
         await expect(this.page.locator(step.selector)).toContainText(step.text);
+        return;
+      }
+      case "assertUrl": {
+        if (!step.urlIncludes) {
+          throw new Error(`Assert URL step is incomplete: ${step.description}`);
+        }
+
+        await expect
+          .poll(() => this.page.url(), {
+            message: step.description
+          })
+          .toContain(step.urlIncludes);
         return;
       }
       default: {

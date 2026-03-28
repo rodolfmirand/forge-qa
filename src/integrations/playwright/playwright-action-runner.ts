@@ -15,7 +15,18 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
 
     switch (intent.kind) {
       case "click": {
-        await locator.click({ timeout: ACTION_TIMEOUT_MS });
+        if (!intent.waitForNavigation) {
+          await locator.click({ timeout: ACTION_TIMEOUT_MS });
+          return;
+        }
+
+        const currentUrl = this.page.url();
+        await Promise.all([
+          this.page.waitForURL((url) => url.toString() !== currentUrl, {
+            timeout: ACTION_TIMEOUT_MS
+          }),
+          locator.click({ timeout: ACTION_TIMEOUT_MS })
+        ]);
         return;
       }
       case "fill": {
@@ -32,6 +43,14 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
         }
 
         await locator.selectOption(intent.value, { timeout: ACTION_TIMEOUT_MS });
+        return;
+      }
+      case "press": {
+        if (!intent.key) {
+          throw new Error(`Press action is missing a key: ${intent.description}`);
+        }
+
+        await locator.press(intent.key, { timeout: ACTION_TIMEOUT_MS });
         return;
       }
       default: {

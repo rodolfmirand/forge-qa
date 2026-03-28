@@ -1,5 +1,12 @@
 export type TestSourceType = "text" | "endpoint" | "interface";
-export type GeneratedStepKind = "navigate" | "click" | "fill" | "assertText";
+export type GeneratedStepKind =
+  | "navigate"
+  | "click"
+  | "fill"
+  | "press"
+  | "waitForNavigation"
+  | "assertText"
+  | "assertUrl";
 
 export interface TestGenerationInput {
   title: string;
@@ -16,6 +23,9 @@ export interface GeneratedTestStep {
   value?: string;
   url?: string;
   text?: string;
+  key?: string;
+  urlIncludes?: string;
+  waitForNavigation?: boolean;
 }
 
 export interface GeneratedTestScenario {

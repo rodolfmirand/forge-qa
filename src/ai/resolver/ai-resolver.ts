@@ -42,7 +42,15 @@ function isGeneratedTestStep(value: unknown): value is GeneratedTestStep {
   }
 
   const candidate = value as Record<string, unknown>;
-  const allowedKinds = new Set(["navigate", "click", "fill", "assertText"]);
+  const allowedKinds = new Set([
+    "navigate",
+    "click",
+    "fill",
+    "press",
+    "waitForNavigation",
+    "assertText",
+    "assertUrl"
+  ]);
 
   return (
     typeof candidate.kind === "string" &&
