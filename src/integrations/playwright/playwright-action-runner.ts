@@ -1,17 +1,77 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import type { ActionIntent } from "../../core/actions/action.types.js";
 
 const ACTION_TIMEOUT_MS = 2_000;
 
 export interface PlaywrightActionRunner {
   run(intent: ActionIntent): Promise<void>;
+  validate(intent: ActionIntent): Promise<void>;
+}
+
+async function assertSupportedElement(intent: ActionIntent, locator: Locator): Promise<void> {
+  const elementInfo = await locator.evaluate((element) => ({
+    tagName: element.tagName.toLowerCase(),
+    role: element.getAttribute("role"),
+    type: element.getAttribute("type"),
+    isContentEditable: element instanceof HTMLElement ? element.isContentEditable : false
+  }));
+
+  switch (intent.kind) {
+    case "fill": {
+      const isTextInput =
+        elementInfo.tagName === "textarea" ||
+        elementInfo.tagName === "input" ||
+        elementInfo.isContentEditable;
+
+      if (!isTextInput) {
+        throw new Error(
+          `Recovered selector is not suitable for fill: ${intent.selector} (${elementInfo.tagName}).`
+        );
+      }
+      return;
+    }
+    case "select": {
+      if (elementInfo.tagName !== "select") {
+        throw new Error(
+          `Recovered selector is not suitable for select: ${intent.selector} (${elementInfo.tagName}).`
+        );
+      }
+      return;
+    }
+    case "press": {
+      const isPressable =
+        elementInfo.tagName === "input" ||
+        elementInfo.tagName === "textarea" ||
+        elementInfo.isContentEditable;
+
+      if (!isPressable) {
+        throw new Error(
+          `Recovered selector is not suitable for press: ${intent.selector} (${elementInfo.tagName}).`
+        );
+      }
+      return;
+    }
+    case "click":
+      return;
+    default: {
+      const exhaustiveCheck: never = intent.kind;
+      throw new Error(`Unsupported action kind: ${exhaustiveCheck}`);
+    }
+  }
 }
 
 export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
   constructor(private readonly page: Page) {}
 
+  async validate(intent: ActionIntent): Promise<void> {
+    const locator = this.page.locator(intent.selector).first();
+
+    await locator.waitFor({ state: "visible", timeout: ACTION_TIMEOUT_MS });
+    await assertSupportedElement(intent, locator);
+  }
+
   async run(intent: ActionIntent): Promise<void> {
-    const locator = this.page.locator(intent.selector);
+    const locator = this.page.locator(intent.selector).first();
 
     switch (intent.kind) {
       case "click": {
@@ -62,6 +122,10 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
 }
 
 export class StubPlaywrightActionRunner implements PlaywrightActionRunner {
+  async validate(intent: ActionIntent): Promise<void> {
+    void intent;
+  }
+
   async run(intent: ActionIntent): Promise<void> {
     void intent;
   }

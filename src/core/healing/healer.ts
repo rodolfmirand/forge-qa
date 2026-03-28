@@ -6,12 +6,15 @@ import type { DOMExtractor } from "./dom-extractor.js";
 import type { AuditLogger } from "../reporting/audit-log.js";
 import { NoopAuditLogger } from "../reporting/audit-log.js";
 
+const DEFAULT_MAX_RECOVERY_ATTEMPTS = 30;
+
 export interface HealerDependencies {
   actionRunner: PlaywrightActionRunner;
   aiResolver: AIResolver;
   selectorMemory: SelectorMemory;
   domExtractor: DOMExtractor;
   auditLogger?: AuditLogger;
+  maxRecoveryAttempts?: number;
 }
 
 interface CandidateSelector {
@@ -27,7 +30,9 @@ export function isHealingCandidate(error: unknown): boolean {
     message.includes("locator") ||
     message.includes("element") ||
     message.includes("timeout") ||
-    message.includes("waiting for")
+    message.includes("waiting for") ||
+    message.includes("recovered selector") ||
+    message.includes("not suitable")
   );
 }
 
@@ -60,9 +65,11 @@ function buildCandidateSelectors(
 
 export class Healer {
   private readonly auditLogger: AuditLogger;
+  private readonly maxRecoveryAttempts: number;
 
   constructor(private readonly dependencies: HealerDependencies) {
     this.auditLogger = dependencies.auditLogger ?? new NoopAuditLogger();
+    this.maxRecoveryAttempts = dependencies.maxRecoveryAttempts ?? DEFAULT_MAX_RECOVERY_ATTEMPTS;
   }
 
   async execute(intent: ActionIntent): Promise<void> {
@@ -71,9 +78,29 @@ export class Healer {
     const candidateSelectors = buildCandidateSelectors(memorizedSelector, intent);
 
     let lastError: unknown = null;
+    let attemptCount = 0;
+
+    const consumeAttempt = (): void => {
+      attemptCount += 1;
+
+      if (attemptCount > this.maxRecoveryAttempts) {
+        throw new Error(
+          `Healing attempt limit exceeded for ${intent.description}. Limit: ${this.maxRecoveryAttempts}.`
+        );
+      }
+    };
 
     for (const candidate of candidateSelectors) {
+      consumeAttempt();
+
       try {
+        if (candidate.strategy !== "original") {
+          await actionRunner.validate({
+            ...intent,
+            selector: candidate.selector
+          });
+        }
+
         await actionRunner.run({
           ...intent,
           selector: candidate.selector
@@ -87,7 +114,9 @@ export class Healer {
             strategy: candidate.strategy,
             originalSelector: intent.selector,
             recoveredSelector: candidate.selector,
-            candidateSelectors
+            candidateSelectors,
+            attemptCount,
+            attemptLimit: this.maxRecoveryAttempts
           });
         }
 
@@ -117,17 +146,37 @@ export class Healer {
       candidateSelectors,
       errorMessage,
       strategy: "ai",
-      suggestion
+      suggestion,
+      attemptCount,
+      attemptLimit: this.maxRecoveryAttempts
     });
 
     if (!suggestion) {
       throw lastError;
     }
 
+    consumeAttempt();
+
+    await actionRunner.validate({
+      ...intent,
+      selector: suggestion.selector
+    });
     await actionRunner.run({
       ...intent,
       selector: suggestion.selector
     });
     await selectorMemory.save(intent.selector, suggestion.selector);
+
+    await this.auditLogger.log("healing", {
+      intent,
+      memorizedSelector,
+      strategy: "ai",
+      originalSelector: intent.selector,
+      recoveredSelector: suggestion.selector,
+      candidateSelectors,
+      attemptCount,
+      attemptLimit: this.maxRecoveryAttempts,
+      suggestion
+    });
   }
 }
