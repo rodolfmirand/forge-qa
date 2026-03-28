@@ -1,16 +1,33 @@
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { createLocalServer, type LocalServerInstance } from "../../src/app/api/local-server.js";
 
 test.describe("local app", () => {
   let server: LocalServerInstance;
+  let previousSelectorMemoryPath: string | undefined;
+  const selectorMemoryPath = path.resolve(
+    process.cwd(),
+    "storage",
+    "selectors.local-app.spec.json"
+  );
 
   test.beforeAll(async () => {
+    previousSelectorMemoryPath = process.env.FORGEQA_SELECTOR_MEMORY_PATH;
+    process.env.FORGEQA_SELECTOR_MEMORY_PATH = selectorMemoryPath;
+
     server = createLocalServer(0);
     await server.start();
   });
 
   test.afterAll(async () => {
     await server.stop();
+
+    if (previousSelectorMemoryPath) {
+      process.env.FORGEQA_SELECTOR_MEMORY_PATH = previousSelectorMemoryPath;
+      return;
+    }
+
+    delete process.env.FORGEQA_SELECTOR_MEMORY_PATH;
   });
 
   test("api can run an execution and report completion", async ({ request }) => {
@@ -59,8 +76,9 @@ test.describe("local app", () => {
       timeout: 20000
     });
     expect(pageErrors).toEqual([]);
-    await expect(page.locator("#execution-logs")).toContainText("Audit entries:");
+    await expect(page.locator("#execution-logs")).toContainText("Planned steps:");
     await expect(page.locator("#execution-logs")).toContainText("Submit the authentication form.");
+    await expect(page.locator("#execution-logs")).toContainText("Audit entries:");
     await expect(page.locator("#execution-logs")).toContainText("[REDACTED]");
   });
 });
