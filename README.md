@@ -131,3 +131,5 @@ A base agora cobre:
 - modo `mock` e modo `openai` para a camada de resolucao
 - API local para iniciar execucoes
 - painel web local para demonstracao e uso manual
+- exibicao do plano gerado, resumo de execucao e links para evidencias
+- contrato de API extensivel com `options` e `metadata`
