@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Forge QA Search Fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>Knowledge Base</h1>
+      <form id="search-form">
+        <label for="search-box">Search</label>
+        <input id="search-box" name="search" type="search" placeholder="Search the docs" />
+      </form>
+      <section id="search-result">Waiting</section>
+    </main>
+
+    <script>
+      const form = document.getElementById("search-form");
+      const searchBox = document.getElementById("search-box");
+      const result = document.getElementById("search-result");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        result.textContent = `Results for: ${searchBox.value}`;
+      });
+    </script>
+  </body>
+</html>

@@ -107,6 +107,7 @@ test.describe("local app", () => {
     });
     expect(pageErrors).toEqual([]);
     await expect(page.locator("#execution-summary")).toContainText("Steps planejados:");
+    await expect(page.locator("#execution-summary")).toContainText("Quality score:");
     await expect(page.locator("#execution-summary")).toContainText("Status final: passed");
     await expect(page.locator("#execution-artifacts a")).toHaveCount(1);
     await expect(page.locator("#execution-logs")).toContainText("Planned steps:");

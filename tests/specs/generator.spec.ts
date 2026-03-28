@@ -46,3 +46,25 @@ test("generator inserts entry discovery when the target URL is not a login page"
   expect(entryStep?.fallbackSelectors).toContain('button:has-text("Entrar")');
   expect(assertTextStep?.text).toBe("Dashboard");
 });
+
+test("generator plans a search flow beyond authentication", async () => {
+  const generator = new TemplateTestGenerator();
+  const scenario = await generator.generate({
+    title: "Search flow",
+    sourceType: "text",
+    content: 'Pesquise por "Forge QA" e valide que o texto "Results for: Forge QA" apareca.',
+    targetUrl: "https://example.com/docs"
+  });
+
+  const fillStep = scenario.steps.find(
+    (step) => step.kind === "fill" && step.description.includes("search field")
+  );
+  const pressStep = scenario.steps.find(
+    (step) => step.kind === "press" && step.description.includes("search query")
+  );
+  const assertTextStep = scenario.steps.find((step) => step.kind === "assertText");
+
+  expect(fillStep?.value).toBe("Forge QA");
+  expect(pressStep?.key).toBe("Enter");
+  expect(assertTextStep?.text).toBe("Results for: Forge QA");
+});

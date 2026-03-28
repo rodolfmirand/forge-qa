@@ -83,3 +83,26 @@ test("generated flow can discover the login entry point before authenticating", 
 
   await expect(page.locator("#result")).toContainText("Dashboard");
 });
+
+test("generated flow can execute a search flow beyond authentication", async ({ page }) => {
+  const fixturePath = path.resolve(process.cwd(), "tests/fixtures/search-flow.html");
+  const fixtureUrl = pathToFileURL(fixturePath).href;
+  const generator = new TemplateTestGenerator();
+  const healer = new Healer({
+    actionRunner: new PlaywrightPageActionRunner(page),
+    aiResolver: new MockAIResolver(),
+    selectorMemory: new InMemorySelectorMemory(),
+    domExtractor: new PlaywrightDOMExtractor(page)
+  });
+  const executor = new GeneratedScenarioExecutor(page, healer);
+  const scenario = await generator.generate({
+    title: "Search flow",
+    sourceType: "text",
+    content: 'Pesquise por "Forge QA" e valide que o texto "Results for: Forge QA" apareca.',
+    targetUrl: fixtureUrl
+  });
+
+  await executor.execute(scenario);
+
+  await expect(page.locator("#search-result")).toContainText("Results for: Forge QA");
+});
