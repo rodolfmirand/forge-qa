@@ -93,7 +93,7 @@ http://127.0.0.1:3000
 2. Informe a URL alvo ou use o fixture local de exemplo.
 3. Descreva o fluxo em texto.
 4. Dispare a execucao.
-5. Acompanhe status, logs e healing no painel.
+5. Acompanhe status, plano, quality score, logs, healing e evidencias no painel.
 
 ## Estrutura inicial
 
@@ -131,5 +131,5 @@ A base agora cobre:
 - modo `mock` e modo `openai` para a camada de resolucao
 - API local para iniciar execucoes
 - painel web local para demonstracao e uso manual
-- exibicao do plano gerado, resumo de execucao e links para evidencias
+- exibicao do plano gerado, resumo de execucao, quality score e links para evidencias
 - contrato de API extensivel com `options` e `metadata`
