@@ -18,6 +18,24 @@ test("execution CLI parses minimal recurring execution parameters", async () => 
   expect(config.output).toBe("pretty");
 });
 
+test("execution CLI parses endpoint payload as an alternate input source", async () => {
+  const config = parseExecutionCLIArgs([
+    "--url",
+    "https://example.com/app",
+    "--source-type",
+    "endpoint",
+    "--source-payload",
+    '{"operation":"update","entity":"user","navigationPath":["Administracao","Usuarios"],"targetRecord":"Carlos Mendes","fields":{"cargo":"Financeiro"}}'
+  ]);
+
+  expect(config.request.sourceType).toBe("endpoint");
+  expect(config.request.sourcePayload).toMatchObject({
+    operation: "update",
+    entity: "user",
+    targetRecord: "Carlos Mendes"
+  });
+});
+
 test("execution CLI parses extensible options and metadata", async () => {
   const config = parseExecutionCLIArgs([
     "--url",
@@ -26,6 +44,8 @@ test("execution CLI parses extensible options and metadata", async () => {
     "Open the page and login",
     "--source-type",
     "text",
+    "--planning-mode",
+    "hybrid",
     "--max-healing-attempts",
     "7",
     "--requested-by",
@@ -37,6 +57,7 @@ test("execution CLI parses extensible options and metadata", async () => {
   ]);
 
   expect(config.request.sourceType).toBe("text");
+  expect(config.request.options?.planning?.mode).toBe("hybrid");
   expect(config.request.options?.maxHealingAttempts).toBe(7);
   expect(config.request.metadata?.requestedBy).toBe("ci-runner");
   expect(config.request.metadata?.labels).toEqual(["nightly", "smoke"]);
@@ -45,9 +66,11 @@ test("execution CLI parses extensible options and metadata", async () => {
 
 test("execution CLI reports usage for missing required params", async () => {
   expect(() => parseExecutionCLIArgs(["--url", "https://example.com"])).toThrow(
-    /Both --url and --flow are required/
+    /either --flow or --source-payload/
   );
   expect(printExecutionUsage()).toContain("Forge QA execution CLI");
+  expect(printExecutionUsage()).toContain("--planning-mode <heuristic|hybrid|ai>");
+  expect(printExecutionUsage()).toContain("--source-payload <json>");
 });
 
 test("execution CLI formats pretty output with summary and artifacts", async () => {

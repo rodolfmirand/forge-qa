@@ -1,3 +1,4 @@
+import { rm } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { createLocalServer, type LocalServerInstance } from "../../src/app/api/local-server.js";
@@ -18,6 +19,10 @@ test.describe("local app", () => {
     previousSelectorMemoryPath = process.env.FORGEQA_SELECTOR_MEMORY_PATH;
     previousArtifactsPath = process.env.FORGEQA_ARTIFACTS_PATH;
     previousAiMode = process.env.FORGEQA_AI_MODE;
+
+    await rm(selectorMemoryPath, { force: true });
+    await rm(artifactsPath, { force: true, recursive: true });
+
     process.env.FORGEQA_SELECTOR_MEMORY_PATH = selectorMemoryPath;
     process.env.FORGEQA_ARTIFACTS_PATH = artifactsPath;
     process.env.FORGEQA_AI_MODE = "mock";
@@ -73,7 +78,7 @@ test.describe("local app", () => {
     const created = (await createResponse.json()) as {
       id: string;
       request: {
-        flow: string;
+        flow?: string;
         metadata?: { requestedBy?: string };
         options?: { maxHealingAttempts?: number };
       };
@@ -91,6 +96,65 @@ test.describe("local app", () => {
         return record.status;
       })
       .toBe("passed");
+  });
+
+  test("api can execute endpoint source payload without textual flow", async ({ request }) => {
+    const createResponse = await request.post(`${server.origin}/api/executions`, {
+      data: {
+        url: "/fixtures/user-crud",
+        sourceType: "endpoint",
+        sourcePayload: {
+          operation: "update",
+          entity: "user",
+          navigationPath: ["Administracao", "Usuarios"],
+          targetRecord: "Carlos Mendes",
+          fields: {
+            cargo: "Financeiro",
+            "nivel de acesso": "Editor"
+          },
+          expectedText: "Usuario atualizado com sucesso"
+        },
+        metadata: {
+          requestedBy: "endpoint-test"
+        }
+      }
+    });
+
+    expect(createResponse.status()).toBe(202);
+    const created = (await createResponse.json()) as {
+      id: string;
+      request: {
+        sourceType?: string;
+        sourcePayload?: {
+          operation?: string;
+          targetRecord?: string;
+          fields?: { cargo?: string };
+        };
+      };
+    };
+
+    expect(created.request.sourceType).toBe("endpoint");
+    expect(created.request.sourcePayload?.operation).toBe("update");
+    expect(created.request.sourcePayload?.targetRecord).toBe("Carlos Mendes");
+    expect(created.request.sourcePayload?.fields?.cargo).toBe("Financeiro");
+
+    await expect
+      .poll(
+        async () => {
+          const statusResponse = await request.get(`${server.origin}/api/executions/${created.id}`);
+          const record = (await statusResponse.json()) as {
+            status: string;
+            result?: {
+              summary?: { finalStatus?: string };
+            };
+          };
+          return record.status + ":" + (record.result?.summary?.finalStatus ?? "pending");
+        },
+        {
+          timeout: 20000
+        }
+      )
+      .toBe("passed:passed");
   });
 
   test("web panel can trigger an execution and display plan, summary and artifacts", async ({
@@ -129,6 +193,8 @@ test.describe("local app", () => {
   });
 
   test("web panel can demonstrate explicit ai healing details", async ({ page }) => {
+    await rm(selectorMemoryPath, { force: true });
+
     await page.goto(server.origin);
     await expect
       .poll(() =>
