@@ -1,4 +1,5 @@
 import type { GeneratedTestScenario, TestSourceType } from "../../types/generation.js";
+import type { PlanningMode } from "../generation/planning.types.js";
 import type { AuditEntry } from "../reporting/audit-log.js";
 import type { ExecutionSummary } from "../reporting/execution-report.js";
 
@@ -10,9 +11,14 @@ export interface ExecutionEvidenceOptions {
   captureScreenshotOnFailure?: boolean;
 }
 
+export interface ExecutionPlanningOptions {
+  mode?: PlanningMode;
+}
+
 export interface ExecutionOptions {
   maxHealingAttempts?: number;
   evidence?: ExecutionEvidenceOptions;
+  planning?: ExecutionPlanningOptions;
 }
 
 export interface ExecutionMetadata {
@@ -23,8 +29,9 @@ export interface ExecutionMetadata {
 
 export interface ExecutionRequest {
   url: string;
-  flow: string;
+  flow?: string;
   sourceType?: TestSourceType;
+  sourcePayload?: unknown;
   options?: ExecutionOptions;
   metadata?: ExecutionMetadata;
   executionId?: string;

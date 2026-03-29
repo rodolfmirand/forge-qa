@@ -38,6 +38,33 @@ export class GeneratedScenarioExecutor {
         });
         return;
       }
+      case "select": {
+        if (!step.selector || !step.value) {
+          throw new Error(`Select step is incomplete: ${step.description}`);
+        }
+
+        await this.healer.execute({
+          kind: "select",
+          selector: step.selector,
+          description: step.description,
+          value: step.value,
+          ...(step.fallbackSelectors ? { fallbackSelectors: step.fallbackSelectors } : {})
+        });
+        return;
+      }
+      case "check": {
+        if (!step.selector) {
+          throw new Error(`Check step is incomplete: ${step.description}`);
+        }
+
+        await this.healer.execute({
+          kind: "check",
+          selector: step.selector,
+          description: step.description,
+          ...(step.fallbackSelectors ? { fallbackSelectors: step.fallbackSelectors } : {})
+        });
+        return;
+      }
       case "click": {
         if (!step.selector) {
           throw new Error(`Click step is missing a selector: ${step.description}`);
@@ -84,7 +111,7 @@ export class GeneratedScenarioExecutor {
           throw new Error(`Assert step is incomplete: ${step.description}`);
         }
 
-        await expect(this.page.locator(step.selector)).toContainText(step.text);
+        await expect(this.page.locator(step.selector).first()).toContainText(step.text);
         return;
       }
       case "assertUrl": {

@@ -1,4 +1,4 @@
-export type ActionKind = "click" | "fill" | "select" | "press";
+export type ActionKind = "click" | "fill" | "select" | "check" | "press";
 
 export interface ActionIntent {
   kind: ActionKind;

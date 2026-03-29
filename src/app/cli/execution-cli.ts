@@ -22,31 +22,40 @@ function splitLabels(value: string): string[] {
     .filter(Boolean);
 }
 
+function parseSourcePayload(rawValue: string): unknown {
+  try {
+    return JSON.parse(rawValue) as unknown;
+  } catch {
+    throw new Error("--source-payload must be valid JSON.");
+  }
+}
+
 export function printExecutionUsage(): string {
   return [
     "Forge QA execution CLI",
     "",
     "Required:",
     "  --url <target-url>",
-    "  --flow <flow-description>",
+    "  --flow <flow-description> or --source-payload <json>",
     "",
     "Optional:",
     "  --source-type <text|endpoint|interface>",
+    "  --source-payload <json>",
+    "  --planning-mode <heuristic|hybrid|ai>",
     "  --max-healing-attempts <number>",
     "  --requested-by <name>",
     "  --labels <comma-separated>",
     "  --output <pretty|json>",
     "",
     "Example:",
-    "  npm run execute -- --url https://example.com --flow \"Pesquise por 'Forge QA'\" --output json"
+    "  npm run execute -- --url https://example.com --flow \"Pesquise por 'Forge QA'\" --planning-mode hybrid --output json"
   ].join("\n");
 }
 
 export function parseExecutionCLIArgs(args: string[]): CLIExecutionConfig {
   const config: CLIExecutionConfig = {
     request: {
-      url: "",
-      flow: ""
+      url: ""
     },
     output: "pretty"
   };
@@ -65,11 +74,32 @@ export function parseExecutionCLIArgs(args: string[]): CLIExecutionConfig {
         index += 1;
         break;
       }
+      case "--source-payload": {
+        config.request.sourcePayload = parseSourcePayload(readOption(args, index));
+        index += 1;
+        break;
+      }
       case "--source-type": {
         const sourceType = readOption(args, index) as NonNullable<ExecutionRequest["sourceType"]>;
         config.request = {
           ...config.request,
           sourceType
+        };
+        index += 1;
+        break;
+      }
+      case "--planning-mode": {
+        const planningMode = readOption(args, index);
+
+        if (planningMode !== "heuristic" && planningMode !== "hybrid" && planningMode !== "ai") {
+          throw new Error("--planning-mode must be one of 'heuristic', 'hybrid' or 'ai'.");
+        }
+
+        config.request.options = {
+          ...(config.request.options ?? {}),
+          planning: {
+            mode: planningMode
+          }
         };
         index += 1;
         break;
@@ -84,7 +114,8 @@ export function parseExecutionCLIArgs(args: string[]): CLIExecutionConfig {
 
         config.request.options = {
           ...(config.request.options ?? {}),
-          maxHealingAttempts: parsedValue
+          maxHealingAttempts: parsedValue,
+          ...(config.request.options?.planning ? { planning: config.request.options.planning } : {})
         };
         index += 1;
         break;
@@ -127,8 +158,10 @@ export function parseExecutionCLIArgs(args: string[]): CLIExecutionConfig {
     }
   }
 
-  if (!config.request.url || !config.request.flow) {
-    throw new Error("Both --url and --flow are required.\n\n" + printExecutionUsage());
+  if (!config.request.url || (!config.request.flow && config.request.sourcePayload === undefined)) {
+    throw new Error(
+      "You must provide --url and either --flow or --source-payload.\n\n" + printExecutionUsage()
+    );
   }
 
   return config;

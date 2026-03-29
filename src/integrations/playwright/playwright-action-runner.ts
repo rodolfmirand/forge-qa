@@ -39,6 +39,18 @@ async function assertSupportedElement(intent: ActionIntent, locator: Locator): P
       }
       return;
     }
+    case "check": {
+      const isCheckable =
+        elementInfo.tagName === "input" &&
+        (elementInfo.type === "checkbox" || elementInfo.type === "radio");
+
+      if (!isCheckable) {
+        throw new Error(
+          `Recovered selector is not suitable for check: ${intent.selector} (${elementInfo.tagName}).`
+        );
+      }
+      return;
+    }
     case "press": {
       const isPressable =
         elementInfo.tagName === "input" ||
@@ -104,6 +116,10 @@ export class PlaywrightPageActionRunner implements PlaywrightActionRunner {
         }
 
         await locator.selectOption(intent.value, { timeout: ACTION_TIMEOUT_MS });
+        return;
+      }
+      case "check": {
+        await locator.check({ timeout: ACTION_TIMEOUT_MS });
         return;
       }
       case "press": {

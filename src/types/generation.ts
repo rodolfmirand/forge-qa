@@ -3,6 +3,8 @@ export type GeneratedStepKind =
   | "navigate"
   | "click"
   | "fill"
+  | "select"
+  | "check"
   | "press"
   | "waitForNavigation"
   | "assertText"
@@ -13,6 +15,7 @@ export interface TestGenerationInput {
   sourceType: TestSourceType;
   content: string;
   targetUrl?: string;
+  sourcePayload?: unknown;
 }
 
 export interface GeneratedTestStep {

@@ -80,7 +80,9 @@ export class ExecutionEngine {
     const browser = await chromium.launch();
     const page = await browser.newPage();
     const auditLogger = new InMemoryAuditLogger();
-    const generator = new TemplateTestGenerator(auditLogger);
+    const generator = new TemplateTestGenerator(auditLogger, {
+      ...(request.options?.planning?.mode ? { planningMode: request.options.planning.mode } : {})
+    });
     const selectorMemory = new FileSelectorMemory(resolveSelectorMemoryPath());
     const healer = new Healer({
       actionRunner: new PlaywrightPageActionRunner(page),
@@ -100,8 +102,9 @@ export class ExecutionEngine {
       plannedScenario = await generator.generate({
         title: "User provided flow",
         sourceType: request.sourceType ?? "text",
-        content: request.flow,
-        targetUrl: request.url
+        content: request.flow ?? "",
+        targetUrl: request.url,
+        ...(request.sourcePayload !== undefined ? { sourcePayload: request.sourcePayload } : {})
       });
 
       scenarioTitle = plannedScenario.title;

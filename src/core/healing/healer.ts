@@ -1,7 +1,7 @@
 import type { ActionIntent } from "../actions/action.types.js";
 import type { AIResolver } from "../../ai/resolver/ai-resolver.js";
 import type { PlaywrightActionRunner } from "../../integrations/playwright/playwright-action-runner.js";
-import type { SelectorMemory } from "../../memory/selector-memory.js";
+import type { SelectorMemory, SelectorMemoryContext } from "../../memory/selector-memory.js";
 import type { DOMExtractor } from "./dom-extractor.js";
 import type { AuditLogger } from "../reporting/audit-log.js";
 import { NoopAuditLogger } from "../reporting/audit-log.js";
@@ -34,6 +34,13 @@ export function isHealingCandidate(error: unknown): boolean {
     message.includes("recovered selector") ||
     message.includes("not suitable")
   );
+}
+
+function buildMemoryContext(intent: ActionIntent): SelectorMemoryContext {
+  return {
+    actionKind: intent.kind,
+    actionDescription: intent.description
+  };
 }
 
 function buildCandidateSelectors(
@@ -74,7 +81,8 @@ export class Healer {
 
   async execute(intent: ActionIntent): Promise<void> {
     const { actionRunner, aiResolver, selectorMemory, domExtractor } = this.dependencies;
-    const memorizedSelector = await selectorMemory.find(intent.selector);
+    const memoryContext = buildMemoryContext(intent);
+    const memorizedSelector = await selectorMemory.find(intent.selector, memoryContext);
     const candidateSelectors = buildCandidateSelectors(memorizedSelector, intent);
 
     let lastError: unknown = null;
@@ -107,7 +115,7 @@ export class Healer {
         });
 
         if (candidate.selector !== intent.selector) {
-          await selectorMemory.save(intent.selector, candidate.selector);
+          await selectorMemory.save(intent.selector, candidate.selector, memoryContext);
           await this.auditLogger.log("healing", {
             intent,
             memorizedSelector,
@@ -165,7 +173,7 @@ export class Healer {
       ...intent,
       selector: suggestion.selector
     });
-    await selectorMemory.save(intent.selector, suggestion.selector);
+    await selectorMemory.save(intent.selector, suggestion.selector, memoryContext);
 
     await this.auditLogger.log("healing", {
       intent,

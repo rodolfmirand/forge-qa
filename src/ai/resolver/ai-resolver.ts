@@ -12,6 +12,8 @@ interface SnapshotElement {
   text?: string;
   placeholder?: string;
   testId?: string;
+  ariaLabel?: string;
+  href?: string;
 }
 
 export interface AIResolver {
@@ -29,6 +31,7 @@ export function isHealingSuggestion(value: unknown): value is HealingSuggestion 
     typeof candidate.selector === "string" &&
     candidate.selector.length > 0 &&
     typeof candidate.confidence === "number" &&
+    Number.isFinite(candidate.confidence) &&
     candidate.confidence >= 0 &&
     candidate.confidence <= 1 &&
     typeof candidate.rationale === "string" &&
@@ -46,6 +49,8 @@ function isGeneratedTestStep(value: unknown): value is GeneratedTestStep {
     "navigate",
     "click",
     "fill",
+    "select",
+    "check",
     "press",
     "waitForNavigation",
     "assertText",
@@ -78,10 +83,19 @@ export function isGeneratedTestScenario(value: unknown): value is GeneratedTestS
   );
 }
 
-function parseHealingSuggestion(content: string): HealingSuggestion | null {
+export function parseHealingSuggestion(content: string): HealingSuggestion | null {
   try {
     const parsed = JSON.parse(content) as unknown;
     return isHealingSuggestion(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function parseGeneratedTestScenario(content: string): GeneratedTestScenario | null {
+  try {
+    const parsed = JSON.parse(content) as unknown;
+    return isGeneratedTestScenario(parsed) ? parsed : null;
   } catch {
     return null;
   }
@@ -119,7 +133,9 @@ function scoreElement(element: SnapshotElement, context: HealingContext): number
     element.type,
     element.text,
     element.placeholder,
-    element.testId
+    element.testId,
+    element.ariaLabel,
+    element.href
   ]
     .filter(Boolean)
     .join(" ")

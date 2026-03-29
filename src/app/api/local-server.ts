@@ -96,18 +96,21 @@ export function createLocalServer(
 
           if (request.method === "POST" && url.pathname === "/api/executions") {
             const payload = (await readJsonBody(request)) as Partial<ExecutionRequest> | null;
+            const hasFlow = typeof payload?.flow === "string" && payload.flow.trim().length > 0;
+            const hasSourcePayload = payload?.sourcePayload !== undefined;
 
-            if (!payload?.url || !payload.flow) {
+            if (!payload?.url || (!hasFlow && !hasSourcePayload)) {
               sendJson(response, 400, {
-                error: "Both url and flow are required."
+                error: "url is required and either flow or sourcePayload must be provided."
               });
               return;
             }
 
             const record = executionService.create({
               url: payload.url,
-              flow: payload.flow,
+              ...(hasFlow ? { flow: payload.flow } : {}),
               ...(payload.sourceType ? { sourceType: payload.sourceType } : {}),
+              ...(hasSourcePayload ? { sourcePayload: payload.sourcePayload } : {}),
               ...(payload.options ? { options: payload.options } : {}),
               ...(payload.metadata ? { metadata: payload.metadata } : {})
             });
@@ -175,6 +178,39 @@ export function createLocalServer(
 
           if (request.method === "GET" && url.pathname === "/fixtures/healing-login") {
             const fixturePath = path.resolve(process.cwd(), "tests/fixtures/healing-login.html");
+            const content = await readFile(fixturePath, "utf8");
+
+            response.writeHead(200, {
+              "Content-Type": "text/html; charset=utf-8"
+            });
+            response.end(content);
+            return;
+          }
+
+          if (request.method === "GET" && url.pathname === "/fixtures/service-crud") {
+            const fixturePath = path.resolve(process.cwd(), "tests/fixtures/service-crud.html");
+            const content = await readFile(fixturePath, "utf8");
+
+            response.writeHead(200, {
+              "Content-Type": "text/html; charset=utf-8"
+            });
+            response.end(content);
+            return;
+          }
+
+          if (request.method === "GET" && url.pathname === "/fixtures/contact-crud") {
+            const fixturePath = path.resolve(process.cwd(), "tests/fixtures/contact-crud.html");
+            const content = await readFile(fixturePath, "utf8");
+
+            response.writeHead(200, {
+              "Content-Type": "text/html; charset=utf-8"
+            });
+            response.end(content);
+            return;
+          }
+
+          if (request.method === "GET" && url.pathname === "/fixtures/user-crud") {
+            const fixturePath = path.resolve(process.cwd(), "tests/fixtures/user-crud.html");
             const content = await readFile(fixturePath, "utf8");
 
             response.writeHead(200, {
