@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Forge QA Service CRUD Fixture</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background: linear-gradient(135deg, #f3eee7, #dbe5d0);
+        color: #201c18;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 20px 56px;
+      }
+
+      nav {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      button,
+      select,
+      input {
+        font: inherit;
+      }
+
+      .nav-button,
+      .action-button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        background: #245c52;
+        color: #fff9f2;
+        cursor: pointer;
+      }
+
+      .panel {
+        display: none;
+        padding: 20px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 18px 40px rgba(32, 28, 24, 0.08);
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      .field {
+        margin-top: 16px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.95rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        margin-top: 8px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #c7b9aa;
+        background: white;
+      }
+
+      #service-result {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+
+      #service-list {
+        margin-top: 20px;
+        padding-left: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Organization Workspace</h1>
+      <nav>
+        <button class="nav-button" id="organization-tab" type="button">Organizacao</button>
+        <button class="nav-button" id="services-tab" type="button">Servicos</button>
+      </nav>
+
+      <section class="panel active" id="organization-panel">
+        <p>Organization overview loaded.</p>
+      </section>
+
+      <section class="panel" id="services-panel">
+        <button class="action-button" id="new-service-button" type="button">Novo servico</button>
+
+        <form id="service-form">
+          <div class="field">
+            <label for="service-name">Nome do servico</label>
+            <input id="service-name" name="service-name" type="text" />
+          </div>
+          <div class="field">
+            <label for="service-category">Categoria</label>
+            <select id="service-category" name="service-category">
+              <option value="">Selecione</option>
+              <option value="Telemedicina">Telemedicina</option>
+              <option value="Consulta">Consulta</option>
+              <option value="Exame">Exame</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="service-price">Valor</label>
+            <input id="service-price" name="service-price" type="text" />
+          </div>
+          <button class="action-button" id="save-service-button" type="submit">
+            Salvar servico
+          </button>
+        </form>
+
+        <section id="service-result">Nenhum servico salvo.</section>
+        <ul id="service-list"></ul>
+      </section>
+    </main>
+
+    <script>
+      const organizationPanel = document.getElementById("organization-panel");
+      const servicesPanel = document.getElementById("services-panel");
+      const organizationTab = document.getElementById("organization-tab");
+      const servicesTab = document.getElementById("services-tab");
+      const newServiceButton = document.getElementById("new-service-button");
+      const serviceForm = document.getElementById("service-form");
+      const serviceResult = document.getElementById("service-result");
+      const serviceList = document.getElementById("service-list");
+
+      function openPanel(panelId) {
+        organizationPanel.classList.toggle("active", panelId === "organization");
+        servicesPanel.classList.toggle("active", panelId === "services");
+      }
+
+      organizationTab.addEventListener("click", () => openPanel("organization"));
+      servicesTab.addEventListener("click", () => openPanel("services"));
+      newServiceButton.addEventListener("click", () => openPanel("services"));
+
+      serviceForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = document.getElementById("service-name").value;
+        const category = document.getElementById("service-category").value;
+        const price = document.getElementById("service-price").value;
+
+        serviceResult.textContent = `Servico salvo com sucesso: ${name} (${category}) - ${price}`;
+        const item = document.createElement("li");
+        item.textContent = name;
+        serviceList.appendChild(item);
+      });
+    </script>
+  </body>
+</html>

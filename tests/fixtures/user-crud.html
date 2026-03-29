@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>User CRUD Fixture</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 24px;
+      }
+
+      nav {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      section {
+        display: none;
+        border: 1px solid #d0d7de;
+        border-radius: 10px;
+        padding: 16px;
+      }
+
+      section[data-visible="true"] {
+        display: block;
+      }
+
+      dialog {
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        width: 420px;
+      }
+
+      dialog form {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        display: grid;
+        gap: 4px;
+      }
+
+      fieldset {
+        border: 1px solid #d0d7de;
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+      }
+
+      td,
+      th {
+        border: 1px solid #d0d7de;
+        padding: 8px;
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      #user-result {
+        margin-top: 16px;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Backoffice Fixture</h1>
+    <nav>
+      <button id="administration-tab" type="button">Administração</button>
+      <button id="users-tab" type="button">Usuários</button>
+    </nav>
+
+    <section id="administration-panel" data-visible="true">
+      <p>Administration center loaded.</p>
+    </section>
+
+    <section id="users-panel">
+      <h2>Usuários</h2>
+      <button id="new-user" type="button">Novo usuario</button>
+      <table id="user-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Acesso</th>
+            <th>Notificações</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="user-result">Nenhuma operacao executada.</div>
+    </section>
+
+    <dialog id="user-modal">
+      <form method="dialog" id="user-form">
+        <h3>Cadastro de usuario</h3>
+        <label>
+          Nome do usuario
+          <input name="user-name" type="text" />
+        </label>
+        <label>
+          Cargo principal
+          <select name="user-role">
+            <option value="Gestora">Gestora</option>
+            <option value="Financeiro">Financeiro</option>
+            <option value="Operacoes">Operacoes</option>
+          </select>
+        </label>
+        <label>
+          <input name="user-notifications" type="checkbox" />
+          Receber notificações
+        </label>
+        <fieldset>
+          <legend>Nivel de acesso</legend>
+          <label>
+            <input name="user-access-level" type="radio" value="Admin" />
+            Admin
+          </label>
+          <label>
+            <input name="user-access-level" type="radio" value="Editor" />
+            Editor
+          </label>
+        </fieldset>
+        <button id="save-user" type="submit">Salvar usuario</button>
+      </form>
+    </dialog>
+
+    <script>
+      const administrationPanel = document.querySelector("#administration-panel");
+      const usersPanel = document.querySelector("#users-panel");
+      const administrationTab = document.querySelector("#administration-tab");
+      const usersTab = document.querySelector("#users-tab");
+      const newUserButton = document.querySelector("#new-user");
+      const userModal = document.querySelector("#user-modal");
+      const userForm = document.querySelector("#user-form");
+      const userTableBody = document.querySelector("#user-table tbody");
+      const userResult = document.querySelector("#user-result");
+      const formTitle = userForm.querySelector("h3");
+      let editingUserId = null;
+      let users = [
+        {
+          id: "seed-user-1",
+          name: "Carlos Mendes",
+          role: "Gestora",
+          accessLevel: "Admin",
+          notifications: true
+        }
+      ];
+
+      function showPanel(panelId) {
+        administrationPanel.dataset.visible = String(panelId === "administration");
+        usersPanel.dataset.visible = String(panelId === "users");
+      }
+
+      function renderRows() {
+        userTableBody.innerHTML = "";
+
+        for (const user of users) {
+          const row = document.createElement("tr");
+          const notifications = user.notifications ? "Ativo" : "Desligado";
+          row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.role}</td>
+            <td>${user.accessLevel}</td>
+            <td>${notifications}</td>
+            <td class="row-actions">
+              <button type="button" data-action="edit" data-id="${user.id}">Editar ${user.name}</button>
+              <button type="button" data-action="delete" data-id="${user.id}">Remover ${user.name}</button>
+            </td>
+          `;
+          userTableBody.appendChild(row);
+        }
+      }
+
+      function resetForm() {
+        userForm.reset();
+        editingUserId = null;
+        formTitle.textContent = "Cadastro de usuario";
+      }
+
+      function openCreate() {
+        resetForm();
+        userModal.showModal();
+      }
+
+      function openEdit(userId) {
+        const user = users.find((candidate) => candidate.id === userId);
+
+        if (!user) {
+          return;
+        }
+
+        editingUserId = user.id;
+        formTitle.textContent = "Cadastro de usuario";
+        userForm.elements.namedItem("user-name").value = user.name;
+        userForm.elements.namedItem("user-role").value = user.role;
+        userForm.elements.namedItem("user-notifications").checked = user.notifications;
+        const accessField = userForm.querySelector(
+          `input[name="user-access-level"][value="${user.accessLevel}"]`
+        );
+
+        if (accessField) {
+          accessField.checked = true;
+        }
+
+        userModal.showModal();
+      }
+
+      function removeUser(userId) {
+        const user = users.find((candidate) => candidate.id === userId);
+
+        if (!user) {
+          return;
+        }
+
+        users = users.filter((candidate) => candidate.id !== userId);
+        renderRows();
+        userResult.textContent = `Usuario removido com sucesso: ${user.name}`;
+        showPanel("users");
+      }
+
+      administrationTab.addEventListener("click", () => showPanel("administration"));
+      usersTab.addEventListener("click", () => showPanel("users"));
+      newUserButton.addEventListener("click", openCreate);
+      userTableBody.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action]");
+
+        if (!button) {
+          return;
+        }
+
+        const action = button.getAttribute("data-action");
+        const id = button.getAttribute("data-id");
+
+        if (!id) {
+          return;
+        }
+
+        if (action === "edit") {
+          openEdit(id);
+          return;
+        }
+
+        if (action === "delete") {
+          removeUser(id);
+        }
+      });
+
+      userForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(userForm);
+        const name = String(formData.get("user-name") || "");
+        const role = String(formData.get("user-role") || "");
+        const notifications = Boolean(formData.get("user-notifications"));
+        const accessLevel = String(formData.get("user-access-level") || "");
+
+        if (editingUserId) {
+          users = users.map((user) =>
+            user.id === editingUserId ? { ...user, name, role, notifications, accessLevel } : user
+          );
+          userResult.textContent = `Usuario atualizado com sucesso: ${name}`;
+        } else {
+          users.push({
+            id: `user-${Date.now()}`,
+            name,
+            role,
+            notifications,
+            accessLevel
+          });
+          userResult.textContent = `Usuario salvo com sucesso: ${name}`;
+        }
+
+        renderRows();
+        userModal.close();
+        resetForm();
+        showPanel("users");
+      });
+
+      renderRows();
+    </script>
+  </body>
+</html>

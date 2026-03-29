@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Forge QA Contact CRUD Fixture</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background: linear-gradient(135deg, #f1ede7, #d6e2eb);
+        color: #201c18;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 20px 56px;
+      }
+
+      nav {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      button,
+      select,
+      input {
+        font: inherit;
+      }
+
+      .nav-button,
+      .action-button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        background: #2e5068;
+        color: #fff9f2;
+        cursor: pointer;
+      }
+
+      .panel {
+        display: none;
+        padding: 20px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 18px 40px rgba(32, 28, 24, 0.08);
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      .field {
+        margin-top: 16px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.95rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        margin-top: 8px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #b9c6cf;
+        background: white;
+      }
+
+      #contact-result {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+
+      #contact-list {
+        margin-top: 20px;
+        padding-left: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Organization Workspace</h1>
+      <nav>
+        <button class="nav-button" id="organization-tab" type="button">Organizacao</button>
+        <button class="nav-button" id="contacts-tab" type="button">Contatos</button>
+      </nav>
+
+      <section class="panel active" id="organization-panel">
+        <p>Organization overview loaded.</p>
+      </section>
+
+      <section class="panel" id="contacts-panel">
+        <button class="action-button" id="new-contact-button" type="button">Novo contato</button>
+
+        <form id="contact-form">
+          <div class="field">
+            <label for="contact-name">Nome do contato</label>
+            <input id="contact-name" name="contact-name" type="text" />
+          </div>
+          <div class="field">
+            <label for="contact-role">Cargo</label>
+            <select id="contact-role" name="contact-role">
+              <option value="">Selecione</option>
+              <option value="Gestora">Gestora</option>
+              <option value="Financeiro">Financeiro</option>
+              <option value="Operacoes">Operacoes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="contact-email" type="email" />
+          </div>
+          <button class="action-button" id="save-contact-button" type="submit">
+            Salvar contato
+          </button>
+        </form>
+
+        <section id="contact-result">Nenhum contato salvo.</section>
+        <ul id="contact-list"></ul>
+      </section>
+    </main>
+
+    <script>
+      const organizationPanel = document.getElementById("organization-panel");
+      const contactsPanel = document.getElementById("contacts-panel");
+      const organizationTab = document.getElementById("organization-tab");
+      const contactsTab = document.getElementById("contacts-tab");
+      const newContactButton = document.getElementById("new-contact-button");
+      const contactForm = document.getElementById("contact-form");
+      const contactResult = document.getElementById("contact-result");
+      const contactList = document.getElementById("contact-list");
+
+      function openPanel(panelId) {
+        organizationPanel.classList.toggle("active", panelId === "organization");
+        contactsPanel.classList.toggle("active", panelId === "contacts");
+      }
+
+      organizationTab.addEventListener("click", () => openPanel("organization"));
+      contactsTab.addEventListener("click", () => openPanel("contacts"));
+      newContactButton.addEventListener("click", () => openPanel("contacts"));
+
+      contactForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = document.getElementById("contact-name").value;
+        const role = document.getElementById("contact-role").value;
+        const email = document.getElementById("contact-email").value;
+
+        contactResult.textContent = `Contato salvo com sucesso: ${name} (${role}) - ${email}`;
+        const item = document.createElement("li");
+        item.textContent = name;
+        contactList.appendChild(item);
+      });
+    </script>
+  </body>
+</html>
