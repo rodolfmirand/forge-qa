@@ -190,29 +190,19 @@ Mitigacao: sanitizar payloads e nunca expor credenciais no painel.
 
 ## 15. Roadmap Atual
 
-### Etapa 1. Base pronta
+O roadmap principal desta fase foi concluido.
 
-- bootstrap, TypeScript, Playwright, API local e painel
+Entregas consolidadas:
 
-### Etapa 2. Core de execucao pronto
+- base tecnica completa com API local, painel web e CLI
+- planejamento heuristico e hibrido para autenticacao, busca e CRUD complexo
+- healing com memoria, fallback, IA e auditoria
+- suporte a entrada textual e `sourcePayload` estruturado
+- relatorios, evidencias, quality score e artefatos
+- testes dedicados para planner, DOM extractor, validacao de IA e memoria contextual
+- roteiro tecnico da demonstracao e analise de contexto visual futuro
 
-- gerador inicial, executor, healing base e cliente de IA
-
-### Etapa 3. Generalizacao em andamento
-
-- contrato de actions e steps mais rico
-- planner heuristico separado
-- descoberta inicial de navegacao para autenticacao
-- suporte a `assertUrl`, `press` e `waitForNavigation`
-
-### Etapa 4. Proximos blocos
-
-- validacao forte de healing
-- limite de retentativa
-- persistencia real da memoria
-- exibicao do plano no painel
-- generalizacao para fluxos alem de autenticacao
-- pipeline recorrente
+As proximas evolucoes passam a ser incrementos de produto, nao lacunas do escopo atual.
 
 ## 16. Mensagem Central
 

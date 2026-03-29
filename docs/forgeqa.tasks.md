@@ -67,7 +67,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Endurecer a recuperacao automatica de falhas de seletor
-- **Status:** Doing
+- **Status:** Done
 - **Objetivo:** tornar o healing previsivel, seguro e reaproveitavel
 
 ### FQA-301
@@ -118,7 +118,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Tornar o comportamento da API explicavel e demonstravel
-- **Status:** Doing
+- **Status:** Done
 - **Objetivo:** produzir evidencias claras de planejamento, execucao e healing
 
 ### FQA-401
@@ -161,7 +161,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Expor o motor por API local e painel web
-- **Status:** Doing
+- **Status:** Done
 - **Objetivo:** tornar o produto utilizavel sem acoplamento a CLI
 
 ### FQA-501 a FQA-504
@@ -206,7 +206,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Preparar roteiro tecnico do video de apresentacao
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-507
 - **Criterio de aceite:** existe uma sequencia objetiva para mostrar painel, planejamento, execucao, falha, cura e reaproveitamento
 
@@ -218,7 +218,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Preparar o projeto para execucao recorrente fora da demo manual
-- **Status:** Todo
+- **Status:** Done
 - **Objetivo:** tornar o produto operavel em pipeline e ambientes repetiveis
 
 ### FQA-601
@@ -245,14 +245,14 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Endurecer o nucleo apos o fluxo principal funcionar
-- **Status:** Doing
+- **Status:** Done
 - **Objetivo:** reduzir risco tecnico e abrir caminho para evolucao
 
 ### FQA-701
 
 - **Tipo:** Task
 - **Titulo:** Criar testes para o planner de cenarios
-- **Status:** Doing
+- **Status:** Done
 - **Dependencia:** FQA-103
 - **Criterio de aceite:** o planner cobre casos simples e produz saida previsivel
 
@@ -260,7 +260,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Criar testes para o extrator de DOM
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-202
 - **Criterio de aceite:** o extrator cobre cenarios comuns e ignora ruido irrelevante
 
@@ -268,7 +268,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Criar testes para validacao do retorno da IA
-- **Status:** Doing
+- **Status:** Done
 - **Dependencia:** FQA-204
 - **Criterio de aceite:** respostas validas e invalidas sao tratadas de forma previsivel
 
@@ -276,7 +276,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Ampliar suporte para novas acoes alem de `click` e `fill`
-- **Status:** Doing
+- **Status:** Done
 - **Dependencia:** FQA-300
 - **Criterio de aceite:** o framework suporta novas acoes mantendo o mesmo fluxo de healing
 
@@ -284,7 +284,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Ampliar suporte para novas fontes de entrada alem de texto
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-100
 - **Criterio de aceite:** o framework suporta ao menos uma nova fonte de entrada mantendo o fluxo geral
 
@@ -292,7 +292,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Enriquecer a memoria com historico e heuristicas
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-304
 - **Criterio de aceite:** curas armazenadas passam a considerar mais contexto do que apenas seletor bruto
 
@@ -300,7 +300,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Avaliar suporte futuro a contexto visual
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-500
 - **Criterio de aceite:** existe uma analise objetiva de custo, beneficio e limites do uso multimodal
 
@@ -312,7 +312,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Generalizar o Forge QA como API E2E orientada a intencao
-- **Status:** Doing
+- **Status:** Done
 - **Objetivo:** sair do fluxo fixture-specific e construir um motor reutilizavel para multiplos cenarios web
 
 ### FQA-801
@@ -379,14 +379,14 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Epic
 - **Titulo:** Evoluir o planner para fluxos complexos e CRUD real
-- **Status:** Todo
+- **Status:** Done
 - **Objetivo:** permitir que a API planeje fluxos multi-etapa de backoffice, como cadastros, edicoes e validacoes mais ricas
 
 ### FQA-901
 
 - **Tipo:** Story
 - **Titulo:** Modelar intencoes de CRUD multi-etapa no planner
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-807
 - **Criterio de aceite:** o planner consegue decompor instrucoes como criar, editar e remover registros em uma sequencia coerente de steps
 
@@ -394,7 +394,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Descobrir navegacao interna por contexto de menu, modulo e entidade
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-804
 - **Criterio de aceite:** o planner consegue sair da home autenticada e localizar modulos como Organizacao, Servicos e cadastros relacionados
 
@@ -402,7 +402,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Planejar interacoes de formularios complexos
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-704
 - **Criterio de aceite:** o planner passa a gerar steps para selects, radios, checkboxes, modais e tabelas com contexto suficiente para execucao
 
@@ -410,7 +410,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Introduzir checkpoints intermediarios de validacao
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-901
 - **Criterio de aceite:** fluxos longos passam a validar estado entre etapas, e nao apenas no resultado final
 
@@ -418,7 +418,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Story
 - **Titulo:** Planejar CRUD orientado a entidade e campos
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-903
 - **Criterio de aceite:** a API entende instrucoes como cadastrar um servico da organizacao com nome, categoria, valor e confirmacao de sucesso
 
@@ -426,7 +426,7 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Task
 - **Titulo:** Criar fixtures e suites para cenarios complexos de CRUD
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-905
 - **Criterio de aceite:** existem cenarios controlados que provam planejamento e execucao de CRUD alem de login e busca
 
@@ -434,18 +434,22 @@ Este documento organiza o backlog tecnico do `Forge QA` como uma API de orquestr
 
 - **Tipo:** Spike
 - **Titulo:** Avaliar uso progressivo de IA no planejamento de fluxos complexos
-- **Status:** Todo
+- **Status:** Done
 - **Dependencia:** FQA-905
 - **Criterio de aceite:** existe uma estrategia objetiva para decidir quando o planner heuristico basta e quando a IA deve complementar o planejamento
 
 ---
 
-## Sprint Atual Recomendada
+## Status do Roadmap
 
-Os itens com maior valor imediato agora sao:
+O roadmap atual desta fase foi fechado.
 
-- FQA-509
-- FQA-901
-- FQA-902
-- FQA-903
-- FQA-905
+Entregas finais adicionadas no fechamento:
+
+- roteiro tecnico da demonstracao
+- testes dedicados para extracao de DOM
+- testes dedicados para parse e validacao de respostas da IA
+- memoria contextual com historico e heuristicas
+- analise objetiva sobre suporte futuro a contexto visual
+
+Proximas evolucoes deixam de ser backlog obrigatorio desta fase e passam a ser trilhas futuras do produto.
